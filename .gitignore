@@ -1,0 +1,421 @@
+# =============================================================================
+# LOW-LATENCY TRADING SYSTEM - GIT IGNORE
+# Protects proprietary logic, credentials, and production data
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# CRITICAL: NEVER COMMIT THESE (Production Secrets)
+# -----------------------------------------------------------------------------
+
+# Exchange credentials and API keys
+**/credentials.json
+**/api_keys.yaml
+**/secrets.env
+**/.env
+**/exchange_config.json
+**/venue_mappings.json
+fix_credentials.cfg
+ctcl_session.conf
+
+# Production configuration
+production_config.yaml
+prod_settings.json
+live_trading_config.toml
+
+# Real P&L data
+**/real_pnl_*.csv
+**/trading_results_*.json
+**/fill_history_*.db
+**/account_statements_*.pdf
+
+# Proprietary alpha signals (CORE LOGIC - Never commit these files)
+# ALL .hpp FILES CONTAIN PROPRIETARY TRADING LOGIC
+
+# Block ALL header files (they contain the real strategy logic)
+*.hpp
+include/*.hpp
+**/*.hpp
+
+# Block all C++ source files with real logic
+src/main.cpp
+src/backtest_demo.cpp
+src/*.cpp
+**/*.cpp
+
+# Trained ML models
+ml_models/*.weights
+ml_models/*.onnx
+model_weights_*.bin
+
+# Rust implementation files
+src/lib.rs
+src/*.rs
+
+# Real market data (purchased/licensed)
+**/real_market_data_*.csv
+**/historical_ticks_*.parquet
+**/level2_orderbook_*.hdf5
+vendor_data/**
+
+# Customer/institutional data
+**/client_configs/**
+**/institutional_accounts/**
+backers_info.json
+
+# -----------------------------------------------------------------------------
+# Build Artifacts
+# -----------------------------------------------------------------------------
+
+# C++ build outputs
+build/
+bin/
+*.o
+*.so
+*.a
+*.dylib
+*.exe
+*.out
+
+# Compiled binaries
+trading_demo
+backtest_demo
+csv_demo
+benchmark_suite
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+*.cmake
+!CMakeLists.txt
+
+# Rust build
+target/
+Cargo.lock
+**/*.rs.bk
+
+# -----------------------------------------------------------------------------
+# Logs (Production and Large Files)
+# -----------------------------------------------------------------------------
+
+# Large backtest logs (keep small demo logs)
+logs/backtest_replay.log
+logs/institutional_replay.log
+logs/*_production_*.log
+logs/*_live_*.log
+
+# Real execution logs
+logs/real_fills_*.log
+logs/exchange_ack_production_*.log
+
+# PCAP files (too large, binary)
+logs/*.pcap
+logs/*.pcapng
+*.pcap
+*.pcapng
+
+# Monitoring data
+logs/metrics_*.jsonl
+logs/prometheus_*.db
+
+# Risk breach logs (may contain sensitive info)
+logs/risk_breaches_production_*.log
+
+# Keep example/demo logs (small, synthetic)
+!logs/nic_rx_tx_hw_ts.log
+!logs/strategy_trace.log
+!logs/exchange_ack.log
+!logs/ptp_sync.log
+!logs/order_gateway.log
+!logs/MANIFEST.sha256
+!logs/README.md
+
+# -----------------------------------------------------------------------------
+# System and IDE
+# -----------------------------------------------------------------------------
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# JetBrains (CLion, PyCharm)
+.idea/
+*.iml
+*.iws
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+*~
+\#*\#
+.\#*
+
+# -----------------------------------------------------------------------------
+# Python
+# -----------------------------------------------------------------------------
+
+# Byte-compiled / optimized
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+
+# Jupyter notebooks (may contain analysis of real data)
+*.ipynb
+.ipynb_checkpoints/
+
+# Python build
+dist/
+build/
+*.egg-info/
+
+# -----------------------------------------------------------------------------
+# Temporary and Cache
+# -----------------------------------------------------------------------------
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.swp
+*.log~
+
+# Core dumps
+core
+core.*
+vgcore.*
+
+# Profiling data
+*.prof
+*.perf
+perf.data*
+cachegrind.out.*
+callgrind.out.*
+
+# Coverage data
+*.gcov
+*.gcda
+*.gcno
+
+# -----------------------------------------------------------------------------
+# Data Files (Sensitive or Large)
+# -----------------------------------------------------------------------------
+
+# CSV files with real data
+trading_metrics.csv
+real_trades_*.csv
+fills_*.csv
+
+# Synthetic data (keep small examples)
+!synthetic_*.csv
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# HDF5 files (market data)
+*.h5
+*.hdf5
+
+# Parquet files
+*.parquet
+
+# -----------------------------------------------------------------------------
+# Documentation Artifacts
+# -----------------------------------------------------------------------------
+
+# Generated docs
+docs/build/
+docs/_build/
+*.pdf
+*.docx
+
+# Keep markdown docs (safe to publish)
+!*.md
+!docs/**/*.md
+
+# -----------------------------------------------------------------------------
+# Institutional Verification (Contains Real Performance Data)
+# -----------------------------------------------------------------------------
+
+# Remove institutional verification package if it has real data
+institutional_verification.zip
+institutional_verification/**/*.log
+
+# Keep only sanitized/demo verification
+!institutional_verification/README.md
+!institutional_verification/PERFORMANCE_TIER_CLASSIFICATION.md
+
+# -----------------------------------------------------------------------------
+# Backup and Archives
+# -----------------------------------------------------------------------------
+
+# Backup files
+*.backup
+backup_*/
+backups/
+
+# Archive files
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.rar
+*.7z
+
+# Keep specific archives if they're documentation
+!docs/**/*.zip
+
+# -----------------------------------------------------------------------------
+# Network Captures and Debugging
+# -----------------------------------------------------------------------------
+
+# tcpdump captures
+*.cap
+*.dmp
+
+# Wireshark files
+*.pcapng
+
+# GDB history
+.gdb_history
+
+# Valgrind logs
+valgrind_*.log
+
+# -----------------------------------------------------------------------------
+# Hardware-Specific
+# -----------------------------------------------------------------------------
+
+# FPGA bitstreams (proprietary)
+*.bit
+*.bin
+*.mcs
+
+# NIC firmware
+firmware/*.fw
+
+# -----------------------------------------------------------------------------
+# Testing (Keep test framework, exclude results with real data)
+# -----------------------------------------------------------------------------
+
+# Test results with real execution data
+test_results_production_*.xml
+benchmark_results_real_*.json
+
+# Keep synthetic test data
+!tests/data/*.csv
+
+# -----------------------------------------------------------------------------
+# Machine Learning
+# -----------------------------------------------------------------------------
+
+# Trained models (proprietary)
+*.pth
+*.pt
+*.pkl
+*.joblib
+*.h5
+*.pb
+*.onnx
+models/*.weights
+
+# Training data (proprietary)
+training_data/
+ml_features_*.csv
+
+# Keep model architecture (safe to publish)
+!model_architecture.json
+!network_config.yaml
+
+# -----------------------------------------------------------------------------
+# Shared Memory and IPC
+# -----------------------------------------------------------------------------
+
+# Shared memory files
+/dev/shm/*
+*.shm
+
+# Named pipes
+*.fifo
+
+# -----------------------------------------------------------------------------
+# License Keys and Certificates
+# -----------------------------------------------------------------------------
+
+# License files (vendor software)
+*.lic
+*.license
+license_key.txt
+
+# SSL/TLS certificates
+*.pem
+*.key
+*.crt
+*.cert
+*.p12
+*.pfx
+
+# Keep self-signed demo certs
+!demo_cert.pem
+
+# -----------------------------------------------------------------------------
+# Performance Tuning
+# -----------------------------------------------------------------------------
+
+# Flame graphs
+*.svg
+flamegraph_*.html
+
+# Perf data
+perf.data
+perf.data.old
+
+# -----------------------------------------------------------------------------
+# ALLOWED FILES (Research Skeleton - Safe to Publish)
+# -----------------------------------------------------------------------------
+
+# Core headers (generic implementations)
+# include/*.hpp - All allowed
+
+# Source files (no proprietary alpha)
+# src/main.cpp - Allowed (generic framework)
+# src/backtest_demo.cpp - Allowed (demo only)
+# src/lib.rs - Allowed (lock-free queue)
+
+# Build scripts
+# *.sh - Allowed
+
+# Documentation
+# *.md - Allowed
+
+# CMake configuration
+# CMakeLists.txt - Allowed
+# Cargo.toml - Allowed
+
+# Demo data (synthetic)
+# synthetic_*.csv - Allowed
+
+# Python utilities (no proprietary logic)
+# *.py - Allowed (verification scripts, data generation)
+
+# =============================================================================
+# END OF .gitignore
+# =============================================================================

@@ -1,0 +1,10 @@
+# order_gateway.log
+# venue=NSE_EQ
+# protocol=CTCL_v2.1
+# session=TRADE_2025121500001
+
+SUBMIT order_id=445501 side=BUY price=101.3000 qty=100 tsc=83499128375208
+SUBMIT order_id=445502 side=SELL price=101.2500 qty=100 tsc=83499128390621
+SUBMIT order_id=445503 side=BUY price=101.3100 qty=150 tsc=83499128399407
+CANCEL order_id=445504 tsc=83499128409143
+SUBMIT order_id=445505 side=SELL price=101.2400 qty=200 tsc=83499128415298

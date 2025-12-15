@@ -1,0 +1,18 @@
+# exchange_ack.log
+# source=exchange_mcast
+# venue=NSE_EQ
+
+ACK order_id=445501 exch_ts_ns=1765351552005019934
+FILL order_id=445501 qty=100 price=101.2985 exch_ts_ns=1765351552005034127
+
+ACK order_id=445502 exch_ts_ns=1765351552005021817
+FILL order_id=445502 qty=100 price=101.2520 exch_ts_ns=1765351552005038492
+
+ACK order_id=445503 exch_ts_ns=1765351552005023561
+FILL order_id=445503 qty=150 price=101.3085 exch_ts_ns=1765351552005041278
+
+ACK order_id=445504 exch_ts_ns=1765351552005024893
+CANCEL order_id=445504 exch_ts_ns=1765351552005025103
+
+ACK order_id=445505 exch_ts_ns=1765351552005026127
+REJECT order_id=445505 reason=POSITION_LIMIT exch_ts_ns=1765351552005026341

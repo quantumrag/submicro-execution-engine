@@ -1,0 +1,39 @@
+[package]
+name = "hft_rust_core"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["staticlib", "cdylib"]  # For FFI with C++
+
+[dependencies]
+# No dependencies for zero-overhead, deterministic execution
+
+[profile.release]
+opt-level = 3              # Maximum optimization
+lto = "fat"                # Link-time optimization
+codegen-units = 1          # Better optimization (slower compile)
+panic = "abort"            # No unwinding overhead
+strip = true               # Strip symbols for smaller binary
+
+[profile.release.build-override]
+opt-level = 3
+
+[profile.release.package."*"]
+opt-level = 3
+
+# Custom profile for ultra-low latency
+[profile.latency]
+inherits = "release"
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+panic = "abort"
+strip = true
+overflow-checks = false    # Disable overflow checks in hot path
+debug-assertions = false
+
+[features]
+default = []
+avx2 = []                  # AVX2 SIMD optimizations
+hardware_tsc = []          # Use hardware TSC for timing

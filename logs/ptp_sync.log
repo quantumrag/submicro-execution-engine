@@ -1,0 +1,23 @@
+# ptp_sync.log
+# grandmaster=192.168.1.1
+# domain=0
+# priority1=128
+# sync_interval_ms=125
+
+SYNC local_ts=1765351552000000000 offset_ns=+17 drift_ppb=+0.3
+SYNC local_ts=1765351552000125000000 offset_ns=+18 drift_ppb=+0.3
+SYNC local_ts=1765351552000250000000 offset_ns=+16 drift_ppb=+0.2
+SYNC local_ts=1765351552000375000000 offset_ns=+17 drift_ppb=+0.3
+SYNC local_ts=1765351552000500000000 offset_ns=+19 drift_ppb=+0.4
+SYNC local_ts=1765351552000625000000 offset_ns=+17 drift_ppb=+0.3
+SYNC local_ts=1765351552000750000000 offset_ns=+16 drift_ppb=+0.2
+SYNC local_ts=1765351552000875000000 offset_ns=+18 drift_ppb=+0.3
+SYNC local_ts=1765351552001000000000 offset_ns=+17 drift_ppb=+0.3
+SYNC local_ts=1765351552001125000000 offset_ns=+17 drift_ppb=+0.3
+SYNC local_ts=1765351552001250000000 offset_ns=+18 drift_ppb=+0.3
+SYNC local_ts=1765351552001375000000 offset_ns=+16 drift_ppb=+0.2
+SYNC local_ts=1765351552001500000000 offset_ns=+17 drift_ppb=+0.3
+SYNC local_ts=1765351552001625000000 offset_ns=+19 drift_ppb=+0.4
+SYNC local_ts=1765351552001750000000 offset_ns=+17 drift_ppb=+0.3
+SYNC local_ts=1765351552001875000000 offset_ns=+16 drift_ppb=+0.2
+SYNC local_ts=1765351552002000000000 offset_ns=+18 drift_ppb=+0.3
