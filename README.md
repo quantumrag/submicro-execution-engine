@@ -27,17 +27,19 @@
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=for-the-badge)](.)
 
 <p>
+<a href="https://submicro.krishnabajpai.me/">🌐 Live Demo</a> •
 <a href="#-key-features">Features</a> •
 <a href="#-quick-start">Quick Start</a> •
 <a href="#-benchmarks">Benchmarks</a> •
 <a href="#-architecture">Architecture</a> •
-<a href="#-documentation">Docs</a> •
-<a href="#-contributing">Contributing</a>
+<a href="#-documentation">Docs</a>
 </p>
 
 ---
 
-### ⚡ **87ns median latency** | 🎯 **Deterministic replay** | 🔒 **Lock-free architecture** | 🧪 **Research-grade framework**
+### ⚡ **890ns median latency** | 🎯 **Deterministic replay** | 🔒 **Lock-free architecture** | 🧪 **Research-grade framework**
+
+**[👉 View Interactive Documentation →](https://submicro.krishnabajpai.me/)**
 
 </div>
 
