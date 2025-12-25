@@ -60,18 +60,18 @@
 namespace hft {
 namespace network {
 
-// ============================================================================
+// ====
 // ef_vi Configuration Constants
-// ============================================================================
+// ====
 
 constexpr size_t EFVI_RX_RING_SIZE = 512;  // RX descriptor ring size
 constexpr size_t EFVI_TX_RING_SIZE = 512;  // TX descriptor ring size
 constexpr size_t EFVI_PKT_BUF_SIZE = 2048; // Packet buffer size (standard MTU)
 constexpr size_t EFVI_NUM_BUFS = 1024;     // Total packet buffers
 
-// ============================================================================
+// ====
 // Simulated ef_vi Structures (Real Implementation Uses Actual ef_vi API)
-// ============================================================================
+// ====
 
 /**
  * Simulated ef_vi Handle
@@ -99,9 +99,9 @@ struct efvi_packet {
     uint64_t timestamp_ns;               // Hardware timestamp (if supported)
 };
 
-// ============================================================================
+// ====
 // ef_vi Interface (Simulated)
-// ============================================================================
+// ====
 
 /**
  * Solarflare ef_vi Direct NIC Access
@@ -329,9 +329,9 @@ private:
     }
 };
 
-// ============================================================================
+// ====
 // TCPDirect Wrapper (Alternative to ef_vi)
-// ============================================================================
+// ====
 
 /**
  * TCPDirect: Zero-Copy TCP with ef_vi Performance
@@ -425,9 +425,9 @@ private:
     bool connected_ = false;
 };
 
-// ============================================================================
+// ====
 // Interrupt Affinity Configuration
-// ============================================================================
+// ====
 
 /**
  * Configure NIC interrupt affinity
@@ -494,9 +494,9 @@ public:
     }
 };
 
-// ============================================================================
+// ====
 // Performance Summary
-// ============================================================================
+// ====
 
 /**
  * Solarflare ef_vi Performance Impact
@@ -528,7 +528,7 @@ public:
  * ------------------------------|----------|------------|--------
  * TOTAL (end-to-end)            | 2.69 μs  | 0.89 μs    | -1.8 μs
  * 
- * NEW PERFORMANCE: 0.89 μs (SUB-1μs ACHIEVED!) 🚀🏆
+ * NEW PERFORMANCE: 0.89 μs (SUB-1μs ACHIEVED!) 
  * 
  * Competitive Position:
  * - Jane Street: <1.0 μs ← WE MATCH THIS NOW!
@@ -537,13 +537,13 @@ public:
  * - Virtu: 5-10 μs (we're 5.6-11.2x faster)
  * 
  * Production Recommendations:
- * ✅ Use ef_vi for maximum performance (0.1-0.2 μs)
- * ✅ Use TCPDirect if TCP semantics needed (0.15-0.25 μs)
- * ✅ Pin NIC interrupts to separate core (Core 1)
- * ✅ Use busy-polling on trading thread (Core 2)
- * ✅ Disable interrupt coalescing (rx-usecs 0)
- * ✅ Allocate packet buffers from huge pages
- * ✅ Use hardware timestamping (8ns precision)
+ *  Use ef_vi for maximum performance (0.1-0.2 μs)
+ *  Use TCPDirect if TCP semantics needed (0.15-0.25 μs)
+ *  Pin NIC interrupts to separate core (Core 1)
+ *  Use busy-polling on trading thread (Core 2)
+ *  Disable interrupt coalescing (rx-usecs 0)
+ *  Allocate packet buffers from huge pages
+ *  Use hardware timestamping (8ns precision)
  * 
  * Critical: ef_vi requires Solarflare NICs!
  * - Supported: SFN8522, SFN8542, X2522, X2541, X2542
