@@ -20,10 +20,10 @@ These components demonstrate that the system is **not just theoretical**, but ar
 **Solution:** HIL Bridge provides a zero-risk migration path from software stub → production FPGA.
 
 **Impact:**
-- ✅ **De-risks Innovation:** Proves FPGA path exists without upfront hardware investment
-- ✅ **Hot-Swappable:** Switch between software/hardware modes at runtime
-- ✅ **Fallback Protection:** Automatic failover to software if hardware degrades
-- ✅ **Vendor Agnostic:** Works with Xilinx, Intel, or custom FPGA solutions
+-  **De-risks Innovation:** Proves FPGA path exists without upfront hardware investment
+-  **Hot-Swappable:** Switch between software/hardware modes at runtime
+-  **Fallback Protection:** Automatic failover to software if hardware degrades
+-  **Vendor Agnostic:** Works with Xilinx, Intel, or custom FPGA solutions
 
 ### Architecture
 
@@ -130,10 +130,10 @@ if (!hw_bridge.meets_latency_sla()) {
 ### Hardware Support
 
 **FPGA Vendors Supported:**
-- ✅ **Xilinx/AMD:** Alveo U50/U250/U280 (XRT API)
-- ✅ **Intel:** Stratix 10/Agilex (OPAE API)
-- ✅ **Achronix:** Speedster7t (Custom drivers)
-- ✅ **Custom:** Any PCIe-based FPGA with memory-mapped I/O
+-  **Xilinx/AMD:** Alveo U50/U250/U280 (XRT API)
+-  **Intel:** Stratix 10/Agilex (OPAE API)
+-  **Achronix:** Speedster7t (Custom drivers)
+-  **Custom:** Any PCIe-based FPGA with memory-mapped I/O
 
 **Communication Methods:**
 - PCIe DMA (zero-copy, <100ns overhead)
@@ -187,10 +187,10 @@ bool predict_hardware(const MicrostructureFeatures& features, double& prediction
 **Solution:** Model Store demonstrates production-grade parameter management grounded in real market data.
 
 **Impact:**
-- ✅ **Empirical Accuracy:** Proves models use real data, not just theory
-- ✅ **Live Updates:** Change parameters without code recompilation
-- ✅ **Version Control:** Track parameter changes over time
-- ✅ **Quality Metrics:** Validate calibration quality (R², Sharpe, etc.)
+-  **Empirical Accuracy:** Proves models use real data, not just theory
+-  **Live Updates:** Change parameters without code recompilation
+-  **Version Control:** Track parameter changes over time
+-  **Quality Metrics:** Validate calibration quality (R², Sharpe, etc.)
 
 ### Architecture
 
@@ -604,9 +604,9 @@ These two components significantly enhance the production credibility of the HFT
 | **Model Store** | Demonstrates empirical calibration | **HIGH** - Buyer knows models use real data, not just theory |
 
 **Combined Impact:**
-- ✅ **Technical:** Clean separation between strategy logic and infrastructure
-- ✅ **Business:** Reduces perceived innovation risk for potential buyers
-- ✅ **Operational:** Enables live updates and hardware migration without downtime
+-  **Technical:** Clean separation between strategy logic and infrastructure
+-  **Business:** Reduces perceived innovation risk for potential buyers
+-  **Operational:** Enables live updates and hardware migration without downtime
 
 **Files Created:**
 - `include/hardware_bridge.hpp` (434 lines)
