@@ -11,7 +11,7 @@ import hashlib
 def check_file_exists(filepath, description):
     """Check if file exists and return status"""
     exists = os.path.exists(filepath)
-    status = "✅" if exists else "❌"
+    status = "" if exists else ""
     size = ""
     if exists:
         size_bytes = os.path.getsize(filepath)
@@ -30,7 +30,7 @@ print("=" * 80)
 print()
 
 # Check core data files
-print("📊 CORE DATA FILES:")
+print("CORE DATA FILES:")
 print("-" * 80)
 market_data_ok = check_file_exists("synthetic_ticks_with_alpha.csv", "Market data (CSV)")
 metadata_ok = check_file_exists("market_data_metadata.json", "Market data metadata (JSON)")
@@ -61,7 +61,7 @@ doc2_ok = check_file_exists("INSTITUTIONAL_DATA_SUMMARY.txt", "Data management s
 print()
 
 # Verify SHA256 checksum
-print("🔒 DATA INTEGRITY:")
+print("DATA INTEGRITY:")
 print("-" * 80)
 if market_data_ok and metadata_ok:
     # Calculate SHA256
@@ -77,13 +77,13 @@ if market_data_ok and metadata_ok:
     expected_checksum = metadata['sha256']
     
     if calculated_checksum == expected_checksum:
-        print(f"  ✅ SHA256 checksum verified: {calculated_checksum}")
+        print(f"   SHA256 checksum verified: {calculated_checksum}")
     else:
-        print(f"  ❌ SHA256 mismatch!")
+        print(f"   SHA256 mismatch!")
         print(f"     Expected: {expected_checksum}")
         print(f"     Got:      {calculated_checksum}")
 else:
-    print("  ⚠️  Cannot verify checksum (missing files)")
+    print("    Cannot verify checksum (missing files)")
 print()
 
 # Overall status
@@ -95,7 +95,7 @@ print()
 all_ok = market_data_ok and metadata_ok and logs_ok and doc1_ok and doc2_ok
 
 if all_ok:
-    print("✅ ALL REQUIRED ARTIFACTS PRESENT")
+    print(" ALL REQUIRED ARTIFACTS PRESENT")
     print()
     print("Package Contents:")
     print("  • Core data files:     2 files")
@@ -104,7 +104,7 @@ if all_ok:
     print()
     print("Status: READY FOR INSTITUTIONAL REVIEW")
 else:
-    print("❌ INCOMPLETE PACKAGE")
+    print(" INCOMPLETE PACKAGE")
     print()
     print("Missing files detected. Please run:")
     print("  1. python3 generate_institutional_data.py")
