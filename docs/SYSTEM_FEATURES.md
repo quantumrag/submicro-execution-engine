@@ -1,11 +1,11 @@
 # High-Frequency Trading System - Complete Feature Set
 
-## 🎯 System Overview
+##  System Overview
 A production-ready, ultra-low-latency HFT system combining **stochastic optimal control theory** with **hardware acceleration** for institutional-grade market making and execution.
 
 ---
 
-## 📊 Core Trading Strategies
+## Core Trading Strategies
 
 ### 1. **Dynamic Market Making (Avellaneda-Stoikov)**
 - **Hamilton-Jacobi-Bellman (HJB) PDE solver** for optimal bid/ask quotes
@@ -37,7 +37,7 @@ double calculate_optimal_spread(double gamma, double sigma, double t);
 
 ---
 
-## 🚀 High-Performance Infrastructure
+##  High-Performance Infrastructure
 
 ### 3. **FPGA Hardware Acceleration**
 - **400ns software inference stub** (current implementation)
@@ -96,7 +96,7 @@ auto predictions = bridge.predict(features);  // Routes to FPGA automatically
 - **NIC offloading**: Checksums, segmentation, RSS
 - **NUMA-aware memory allocation** for L3 cache optimization
 
-### 7. **Zero-Copy Protocol Decoders** ⚡ NEW
+### 7. **Zero-Copy Protocol Decoders** NEW
 - **Memory-mapped binary structures** aligned with exchange protocols (FIX/SBE/Native)
 - **Direct parsing from NIC ring buffer** - eliminates intermediate copies
 - **Packed structs (#pragma pack(1))** for byte-perfect alignment
@@ -111,7 +111,7 @@ double price = msg->price;  // Direct memory access, no copy
 uint64_t order_id = msg->order_id;
 ```
 
-### 8. **Pre-Serialized Order Templates** ⚡ NEW
+### 8. **Pre-Serialized Order Templates** NEW
 - **Pre-built binary protocol templates** at initialization
 - **Runtime patching** of only dynamic fields (price, size, order_id)
 - **Template pool per symbol** for limit/market/IOC/FOK orders
@@ -174,7 +174,7 @@ effective_cost = venue_fee + latency_penalty + slippage_estimate
 
 ---
 
-## 🛡️ Risk Management & Monitoring
+## Risk Management & Monitoring
 
 ### 11. **Real-Time Risk Control**
 - **Position limits**: Per-symbol and aggregate exposure
@@ -205,7 +205,7 @@ effective_cost = venue_fee + latency_penalty + slippage_estimate
 
 ---
 
-## ⚡ Advanced Infrastructure
+## Advanced Infrastructure
 
 ### 14. **Lock-Free Data Structures**
 - **SPSC/MPMC queues** for inter-thread communication
@@ -267,7 +267,7 @@ effective_cost = venue_fee + latency_penalty + slippage_estimate
 
 ---
 
-## 🔧 Build & Deployment
+## Build & Deployment
 
 ### Compilation:
 ```bash
@@ -277,11 +277,11 @@ cargo build --release         # Rust components
 ```
 
 ### Dependencies:
-- ✅ **C++17** compiler (g++, clang)
-- ✅ **Boost 1.89+** (Beast, Asio for WebSocket)
-- ✅ **nlohmann/json** for JSON serialization
-- ✅ **CMake 3.20+** for build system
-- ✅ **Rust 1.70+** for FFI components (optional)
+-  **C++17** compiler (g++, clang)
+-  **Boost 1.89+** (Beast, Asio for WebSocket)
+-  **nlohmann/json** for JSON serialization
+-  **CMake 3.20+** for build system
+-  **Rust 1.70+** for FFI components (optional)
 
 ### Platform Support:
 - **Primary**: Linux x86_64 (Ubuntu 20.04+, CentOS 8+)
@@ -290,7 +290,7 @@ cargo build --release         # Rust components
 
 ---
 
-## 📊 Performance Characteristics
+## Performance Characteristics
 
 ### Latency Targets:
 - **Order submission**: < 5 microseconds (kernel bypass NIC)
@@ -317,10 +317,10 @@ cargo build --release         # Rust components
 ### **End-to-End Latency (Including Network)**
 | Scenario | On-Server | Network | Total | Competitive? |
 |----------|-----------|---------|-------|--------------|
-| Development (Remote) | 2.75 μs | 500 μs | **~503 μs** | ❌ No |
-| Co-located (Software) | 2.75 μs | 10 μs | **~13 μs** | ✅ Yes |
-| Co-located (FPGA) | 2.45 μs | 10 μs | **~12.5 μs** | ✅ Yes |
-| **Best-Case (Optimized)** | **2.20 μs** | **5 μs** | **~7.2 μs** | ✅ **Measured** |
+| Development (Remote) | 2.75 μs | 500 μs | **~503 μs** |  No |
+| Co-located (Software) | 2.75 μs | 10 μs | **~13 μs** |  Yes |
+| Co-located (FPGA) | 2.45 μs | 10 μs | **~12.5 μs** |  Yes |
+| **Best-Case (Optimized)** | **2.20 μs** | **5 μs** | **~7.2 μs** |  **Measured** |
 
 **Key Insight:** Network location matters 100x more than on-server optimization. Co-location reduces latency from 500 μs to 10 μs (98% reduction).
 
@@ -336,7 +336,7 @@ cargo build --release         # Rust components
 
 ---
 
-## 🎓 Key Innovations
+## Key Innovations
 
 1. **Theoretical Rigor**: Real-world implementation of academic research (Avellaneda-Stoikov, Hawkes)
 2. **Hardware Acceleration Path**: Production-ready FPGA integration point
@@ -347,7 +347,7 @@ cargo build --release         # Rust components
 
 ---
 
-## 📚 Documentation
+##  Documentation
 
 - **[ARCHITECTURE.md](ARCHITECTURE.md)**: System design and component interactions
 - **[FEATURES.md](FEATURES.md)**: Detailed feature descriptions (legacy)
@@ -360,7 +360,7 @@ cargo build --release         # Rust components
 
 ---
 
-## 🚀 Next Steps for Production
+##  Next Steps for Production
 
 ### Recommended Enhancements:
 1. **FPGA Deployment**: Implement actual hardware inference (replace 400ns stub)
@@ -373,19 +373,19 @@ cargo build --release         # Rust components
 
 ---
 
-## ✅ Current Status
+##  Current Status
 
-**All 15 header files compile successfully!** ✅
+**All 15 header files compile successfully!** 
 
 The system is **production-ready** with:
-- ✅ Core trading strategies (Avellaneda-Stoikov, Hawkes)
-- ✅ Hardware acceleration path (FPGA HIL Bridge)
-- ✅ Model calibration infrastructure (Parameter Store)
-- ✅ Smart order routing (Latency-aware SOR)
-- ✅ Ultra-low-latency networking (Kernel bypass)
-- ✅ Real-time monitoring (WebSocket dashboard)
-- ✅ Comprehensive risk controls
-- ✅ Multi-exchange connectivity
+-  Core trading strategies (Avellaneda-Stoikov, Hawkes)
+-  Hardware acceleration path (FPGA HIL Bridge)
+-  Model calibration infrastructure (Parameter Store)
+-  Smart order routing (Latency-aware SOR)
+-  Ultra-low-latency networking (Kernel bypass)
+-  Real-time monitoring (WebSocket dashboard)
+-  Comprehensive risk controls
+-  Multi-exchange connectivity
 
 **Ready for paper trading and live deployment testing.**
 
