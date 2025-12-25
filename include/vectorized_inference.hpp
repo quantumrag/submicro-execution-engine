@@ -25,28 +25,6 @@
 
 namespace hft {
 
-/**
- * VectorizedInferenceEngine - Ultra-fast SIMD-optimized inference stub
- * 
- * Performance Target: 550ns → 200-300ns (software-only, no FPGA)
- * 
- * Key Optimizations:
- * 1. AVX-512 vectorization: Process 8 doubles simultaneously
- * 2. Cache-aligned memory: All arrays aligned to 64-byte cache lines
- * 3. Hand-tuned intrinsics: Direct CPU vector register access
- * 4. FMA operations: Fused multiply-add for weight × input calculations
- * 5. Minimal branching: All computation fully vectorized
- * 
- * Architecture:
- * - Simple 2-layer neural network: Input(10) → Hidden(16) → Output(3)
- * - Output: [buy_signal, sell_signal, hold_signal]
- * - Activation: Fast approximated tanh using SIMD
- * 
- * Memory Layout:
- * - Weight matrices: Contiguous, cache-aligned
- * - Bias vectors: Contiguous, cache-aligned
- * - Intermediate buffers: Pre-allocated, cache-aligned
- */
 class VectorizedInferenceEngine {
 public:
     static constexpr size_t INPUT_SIZE = 10;
