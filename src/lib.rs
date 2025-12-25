@@ -5,9 +5,7 @@
 use std::sync::atomic::{AtomicU64, AtomicBool, Ordering};
 use std::time::{Duration, Instant};
 
-// ============================================================================
 // FFI-compatible types (matching C++ structs)
-// ============================================================================
 
 #[repr(C, align(64))]
 pub struct MarketTick {
@@ -41,10 +39,7 @@ pub struct Order {
     _padding: [u8; 6],
 }
 
-// ============================================================================
 // Lock-Free SPSC Queue (Rust implementation)
-// Provides memory safety + zero-cost abstraction
-// ============================================================================
 
 pub struct LockFreeSPSC<T, const CAPACITY: usize> {
     buffer: Box<[T; CAPACITY]>,
@@ -133,9 +128,7 @@ impl<T: Default + Copy, const CAPACITY: usize> LockFreeSPSC<T, CAPACITY> {
 unsafe impl<T: Send, const CAPACITY: usize> Send for LockFreeSPSC<T, CAPACITY> {}
 unsafe impl<T: Send, const CAPACITY: usize> Sync for LockFreeSPSC<T, CAPACITY> {}
 
-// ============================================================================
 // High-Resolution Timer (Rust-side)
-// ============================================================================
 
 pub struct HiResTimer {
     start: Instant,
@@ -173,9 +166,7 @@ impl HiResTimer {
     }
 }
 
-// ============================================================================
 // Shared Memory Queue (Rust wrapper for C++ shared memory)
-// ============================================================================
 
 pub struct SharedMemoryQueue {
     name: String,
@@ -213,9 +204,7 @@ impl SharedMemoryQueue {
     }
 }
 
-// ============================================================================
 // Risk Control (Rust implementation with memory safety)
-// ============================================================================
 
 pub struct RiskControl {
     max_position: i64,
@@ -269,9 +258,7 @@ impl RiskControl {
     }
 }
 
-// ============================================================================
 // FFI Declarations (C++ functions callable from Rust)
-// ============================================================================
 
 extern "C" {
     fn shm_write_tick(name: *const u8, tick: *const MarketTick) -> bool;
@@ -280,10 +267,8 @@ extern "C" {
     fn cpp_fpga_predict(engine: *mut std::ffi::c_void, features: *const f64, output: *mut f64);
 }
 
-// ============================================================================
 // Rust-side Market Making Strategy
 // Zero-cost abstractions with compile-time guarantees
-// ============================================================================
 
 pub struct MarketMaker {
     risk_aversion: f64,
@@ -341,9 +326,9 @@ impl MarketMaker {
     }
 }
 
-// ============================================================================
+// ====
 // Default implementations
-// ============================================================================
+// ====
 
 impl Default for MarketTick {
     fn default() -> Self {
@@ -374,9 +359,9 @@ impl Clone for MarketTick {
     }
 }
 
-// ============================================================================
+// ====
 // Benchmarking utilities
-// ============================================================================
+// ====
 
 #[inline(never)]
 pub fn benchmark_queue_throughput() {
