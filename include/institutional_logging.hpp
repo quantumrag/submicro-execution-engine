@@ -14,24 +14,9 @@
 // SHA256 implementation for data checksums
 #include <openssl/sha.h>
 
-// ============================================================================
-// INSTITUTIONAL-GRADE LOGGING SYSTEM
-// ============================================================================
-// PURPOSE: Provide third-party verifiable audit trail for HFT backtesting
-// FEATURES:
-//   - Deterministic replay logs with SHA256 checksums
-//   - Order lifecycle tracking (submit→ack→fill→cancel)
-//   - Latency distribution analysis (p50/p90/p99/p99.9/max)
-//   - Risk kill-switch breach logging
-//   - Slippage and market impact analysis
-//   - System verification (clock sync, hardware config)
-// ============================================================================
-
 namespace InstitutionalLogging {
 
-// ============================================================================
 // SHA256 Checksum Calculator
-// ============================================================================
 class SHA256Hasher {
 public:
     static std::string file_checksum(const std::string& filepath) {
@@ -77,13 +62,10 @@ public:
     }
 };
 
-// ============================================================================
 // Event Replay Logger
-// ============================================================================
 // PURPOSE: Create bit-for-bit reproducible audit trail
 // OUTPUT: Event-by-event log with timestamps, decisions, order flow
 // VERIFICATION: Third parties can replay log to verify P&L claims
-// ============================================================================
 class EventReplayLogger {
 public:
     explicit EventReplayLogger(const std::string& log_path)
@@ -213,13 +195,9 @@ private:
     }
 };
 
-// ============================================================================
-// Latency Distribution Analyzer
-// ============================================================================
 // PURPOSE: Track latency percentiles for all critical paths
 // METRICS: p50, p90, p99, p99.9, max for tick→decision, order→ack, total RTT
 // OUTPUT: Histograms and percentile tables (not just averages)
-// ============================================================================
 class LatencyDistribution {
 public:
     void add_sample(int64_t latency_ns) {
@@ -334,12 +312,7 @@ private:
     }
 };
 
-// ============================================================================
-// Slippage and Market Impact Analyzer
-// ============================================================================
-// PURPOSE: Track execution quality vs theoretical optimal
-// METRICS: Slippage (fill vs mid), VWAP performance, adverse selection
-// ============================================================================
+
 class SlippageAnalyzer {
 public:
     struct FillAnalysis {
@@ -437,12 +410,6 @@ private:
     std::vector<FillAnalysis> fills_;
 };
 
-// ============================================================================
-// Risk Kill-Switch Logger
-// ============================================================================
-// PURPOSE: Log all risk limit breaches and automatic protective actions
-// CRITICAL: Must document when system halts trading for regulatory compliance
-// ============================================================================
 class RiskBreachLogger {
 public:
     explicit RiskBreachLogger(const std::string& log_path)
@@ -510,12 +477,7 @@ private:
     }
 };
 
-// ============================================================================
-// System Verification Logger
-// ============================================================================
-// PURPOSE: Document hardware/software configuration for reproducibility
-// OUTPUT: CPU model, clock source, kernel version, NIC settings
-// ============================================================================
+
 class SystemVerificationLogger {
 public:
     static void generate_report(const std::string& output_path) {
@@ -553,14 +515,14 @@ public:
         
         file << "DETERMINISM GUARANTEES\n";
         file << std::string(70, '-') << "\n";
-        file << "✓ Fixed random seed (configurable)\n";
-        file << "✓ Sequential event replay (no threading)\n";
-        file << "✓ Bit-for-bit reproducible across runs\n";
-        file << "✓ SHA256 checksums for data integrity\n";
-        file << "✓ Event-by-event audit trail\n\n";
+        file << "Fixed random seed (configurable)\n";
+        file << "Sequential event replay (no threading)\n";
+        file << "Bit-for-bit reproducible across runs\n";
+        file << "SHA256 checksums for data integrity\n";
+        file << "Event-by-event audit trail\n\n";
         
         file.close();
-        std::cout << "✓ System verification report written to: " << output_path << "\n";
+        std::cout << "System verification report written to: " << output_path << "\n";
     }
     
 private:
