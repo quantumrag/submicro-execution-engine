@@ -106,7 +106,7 @@ export default function Footer() {
             {/* Disclaimer */}
             <div className="flex items-center gap-2 text-xs">
               <span className="px-3 py-1 rounded-full bg-yellow-50 border border-yellow-200 text-yellow-700">
-                ⚠️ Not for Production Trading
+                 Not for Production Trading
               </span>
             </div>
 
