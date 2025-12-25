@@ -13,16 +13,16 @@ ERRORS=0
 
 # Function to print results
 check_pass() {
-    echo "✅ $1"
+    echo " $1"
 }
 
 check_warn() {
-    echo "⚠️  $1"
+    echo "  $1"
     ((WARNINGS++))
 }
 
 check_fail() {
-    echo "❌ $1"
+    echo " $1"
     ((ERRORS++))
 }
 
@@ -182,7 +182,7 @@ echo "[12] DPDK (Optional)"
 if command -v dpdk-devbind.py &> /dev/null; then
     check_pass "DPDK tools installed"
 else
-    echo "   ℹ️  DPDK not installed (optional for kernel bypass)"
+    echo "   DPDK not installed (optional for kernel bypass)"
 fi
 echo ""
 
@@ -196,20 +196,20 @@ echo "Warnings: $WARNINGS"
 echo ""
 
 if [[ "$ERRORS" -eq 0 && "$WARNINGS" -eq 0 ]]; then
-    echo "✅ System is optimally configured for HFT benchmarking!"
+    echo " System is optimally configured for HFT benchmarking!"
     echo ""
     echo "Ready to run:"
     echo "  ./build_benchmark.sh"
     echo "  sudo ./build/hft_benchmark --samples 100000000"
     exit 0
 elif [[ "$ERRORS" -eq 0 ]]; then
-    echo "⚠️  System is functional but not optimally configured"
+    echo "  System is functional but not optimally configured"
     echo ""
     echo "You can run benchmarks, but results may not be optimal."
     echo "Address warnings above for best performance."
     exit 0
 else
-    echo "❌ System has critical configuration issues"
+    echo " System has critical configuration issues"
     echo ""
     echo "Fix errors above before running benchmarks."
     exit 1
