@@ -136,9 +136,9 @@ private:
     alignas(32) std::array<double, 10> current_ask_quantities_;
 };
 
-// ============================================================================
+// ====
 // SIMD Feature Normalizer (Z-score scaling vectorized)
-// ============================================================================
+// ====
 class SIMDFeatureNormalizer {
 public:
     SIMDFeatureNormalizer() {
@@ -208,9 +208,9 @@ private:
     alignas(32) std::array<double, 16> stddevs_;
 };
 
-// ============================================================================
+// ====
 // SIMD Imbalance Calculator
-// ============================================================================
+// ====
 class SIMDImbalanceCalculator {
 public:
     // Calculate volume imbalance with SIMD reduction
@@ -273,9 +273,9 @@ public:
     }
 };
 
-// ============================================================================
+// ====
 // Fast Feature Engine (combines all SIMD optimizations)
-// ============================================================================
+// ====
 class FastFeatureEngine {
 public:
     FastFeatureEngine() {
