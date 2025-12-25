@@ -41,9 +41,9 @@
 namespace hft {
 namespace branch_optimization {
 
-// ============================================================================
+// ====
 // Branch Prediction Macros (Cross-Platform)
-// ============================================================================
+// ====
 
 // C++20 [[likely]] / [[unlikely]]
 #if __cplusplus >= 202002L
@@ -64,9 +64,9 @@ namespace branch_optimization {
     #endif
 #endif
 
-// ============================================================================
+// ====
 // Hot Path Order Routing (Branch-Optimized)
-// ============================================================================
+// ====
 
 /**
  * Optimized order execution with hot path hints
@@ -152,9 +152,9 @@ private:
     }
 };
 
-// ============================================================================
+// ====
 // Flat Array Order Book (Zero Pointer Chasing)
-// ============================================================================
+// ====
 
 /**
  * Fully flat order book using pre-allocated arrays
@@ -255,9 +255,9 @@ private:
     size_t num_asks_;
 };
 
-// ============================================================================
+// ====
 // Compile-Time Math Optimization
-// ============================================================================
+// ====
 
 /**
  * Compile-time constant folding and template metaprogramming
@@ -320,9 +320,9 @@ namespace compile_time_math {
     }
 }
 
-// ============================================================================
+// ====
 // Profile-Guided Optimization (PGO) Helper
-// ============================================================================
+// ====
 
 /**
  * PGO Instrumentation Points
@@ -359,9 +359,9 @@ public:
     }
 };
 
-// ============================================================================
+// ====
 // Complete Optimized Trading Loop
-// ============================================================================
+// ====
 
 /**
  * Example: Fully optimized trading loop with all techniques
@@ -441,9 +441,9 @@ private:
     }
 };
 
-// ============================================================================
+// ====
 // Performance Summary
-// ============================================================================
+// ====
 
 /**
  * Branch Optimization Performance Impact
@@ -464,12 +464,12 @@ private:
  * - **TARGET: <1.5 μs (ULTRA-ELITE, approaching Jane Street!)**
  * 
  * Production Recommendations:
- * ✅ Use [[likely]] / [[unlikely]] on all critical branches
- * ✅ Replace std::map / pointer structures with flat arrays
- * ✅ Move all calculations to constexpr where possible
- * ✅ Run PGO with representative market data
- * ✅ Align all critical data structures to cache lines
- * ✅ Profile with perf to verify branch prediction accuracy
+ *  Use [[likely]] / [[unlikely]] on all critical branches
+ *  Replace std::map / pointer structures with flat arrays
+ *  Move all calculations to constexpr where possible
+ *  Run PGO with representative market data
+ *  Align all critical data structures to cache lines
+ *  Profile with perf to verify branch prediction accuracy
  * 
  * Verification:
  * ```bash
