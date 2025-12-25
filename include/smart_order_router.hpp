@@ -136,15 +136,15 @@ struct RoutingConfig {
     double rtt_ema_alpha;           // EMA smoothing factor (e.g., 0.2)
 };
 
-// ============================================================================
+// ====
 // Smart Order Router with Latency Budget Integration
-// ============================================================================
+// ====
 
 class SmartOrderRouter {
 public:
-    // ========================================================================
+    // 
     // Construction & Initialization
-    // ========================================================================
+    // 
     
     explicit SmartOrderRouter(const RoutingConfig& config = default_config())
         : config_(config)
@@ -166,9 +166,9 @@ public:
         return true;
     }
     
-    // ========================================================================
+    // 
     // Venue Management
-    // ========================================================================
+    // 
     
     // Add venue to routing pool
     void add_venue(const VenueInfo& venue) {
@@ -210,9 +210,9 @@ public:
         return active;
     }
     
-    // ========================================================================
+    // 
     // Network Latency Monitoring (Heartbeat System)
-    // ========================================================================
+    // 
     
     // Send heartbeat to venue (call periodically, e.g., every 100ms)
     void send_heartbeat(const std::string& venue_id, Timestamp now) {
@@ -282,9 +282,9 @@ public:
         }
     }
     
-    // ========================================================================
+    // 
     // Latency Budget Calculation (HJB/Avellaneda-Stoikov Integration)
-    // ========================================================================
+    // 
     
     // Calculate latency budget based on market conditions and HJB model
     double calculate_latency_budget(
@@ -370,9 +370,9 @@ public:
         return latency_budget_us;
     }
     
-    // ========================================================================
+    // 
     // Smart Order Routing Decision
-    // ========================================================================
+    // 
     
     // Route order to optimal venue with latency budget check
     RoutingDecision route_order(
@@ -552,9 +552,9 @@ public:
         return decision;
     }
     
-    // ========================================================================
+    // 
     // Order Execution Feedback (for statistics)
-    // ========================================================================
+    // 
     
     // Record order execution result for statistics
     void record_order_result(const std::string& venue_id, bool filled, bool timeout) {
@@ -575,9 +575,9 @@ public:
         }
     }
     
-    // ========================================================================
+    // 
     // Monitoring & Diagnostics
-    // ========================================================================
+    // 
     
     // Get venue state for monitoring
     std::optional<VenueState> get_venue_state(const std::string& venue_id) const {
@@ -594,9 +594,9 @@ public:
     }
 
 private:
-    // ========================================================================
+    // 
     // Default Configuration
-    // ========================================================================
+    // 
     
     static RoutingConfig default_config() {
         RoutingConfig config;
@@ -622,9 +622,9 @@ private:
         return config;
     }
     
-    // ========================================================================
+    // 
     // Venue Initialization (Example Venues)
-    // ========================================================================
+    // 
     
     void initialize_venues() {
         // In production, load from configuration file or database
@@ -678,9 +678,9 @@ private:
         add_venue(kraken);
     }
     
-    // ========================================================================
+    // 
     // Member Variables
-    // ========================================================================
+    // 
     
     RoutingConfig config_;
     DynamicMMStrategy* as_model_;  // For latency budget calculation
@@ -690,9 +690,9 @@ private:
     std::unordered_map<std::string, VenueState> venue_states_;
 };
 
-// ============================================================================
+// ====
 // Integration Example (for main.cpp)
-// ============================================================================
+// ====
 //
 // // Initialize Avellaneda-Stoikov model
 // AvellanedaStoikov as_model(0.1, 0.5, 1.5);
