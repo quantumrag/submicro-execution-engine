@@ -22,7 +22,7 @@
  * - DPDK (generic):     0.2-0.4 μs  (generic PMD layer)
  * - OpenOnload:         0.8-1.2 μs  (socket emulation)
  * - Solarflare ef_vi:   0.1-0.2 μs  (vendor-specific)
- * - Custom driver:      0.02-0.05 μs (THIS!) ⚡
+ * - Custom driver:      0.02-0.05 μs (THIS!)
  * 
  * Savings: 0.15-0.38 μs vs best alternatives!
  * 
@@ -91,9 +91,7 @@
 namespace hft {
 namespace hardware {
 
-// ============================================================================
 // NIC Hardware Constants (Intel X710 / i40e)
-// ============================================================================
 
 // Descriptor ring sizes (must be power of 2)
 constexpr size_t RX_RING_SIZE = 512;
@@ -121,16 +119,7 @@ namespace reg {
     constexpr uint64_t STATUS       = 0x0008;  // Device status
 }
 
-// ============================================================================
-// Hardware Descriptor Formats
-// ============================================================================
 
-/**
- * RX Descriptor (Intel i40e format)
- * 
- * Hardware writes this when packet arrives.
- * No function call - we just read memory!
- */
 struct alignas(16) RXDescriptor {
     uint64_t buffer_addr;  // Physical address of packet buffer (DMA)
     uint64_t header_addr;  // Header buffer address (optional)
@@ -147,12 +136,6 @@ struct alignas(16) RXDescriptor {
     uint64_t reserved;
 };
 
-/**
- * TX Descriptor (Intel i40e format)
- * 
- * We write this to send packet.
- * Hardware reads it and DMAs packet to wire.
- */
 struct alignas(16) TXDescriptor {
     uint64_t buffer_addr;  // Physical address of packet buffer
     uint64_t cmd_type_len; // Command, type, and length fields
@@ -164,25 +147,6 @@ struct alignas(16) TXDescriptor {
 constexpr uint32_t RX_DD_BIT = (1u << 0);  // Descriptor Done (packet received)
 constexpr uint32_t TX_DD_BIT = (1u << 0);  // Descriptor Done (packet sent)
 
-// ============================================================================
-// Custom NIC Driver (Zero Abstraction)
-// ============================================================================
-
-/**
- * CustomNICDriver: Direct Memory-Mapped Hardware Access
- * 
- * This is as close to hardware as you can get in userspace!
- * 
- * Performance: 20-50 ns packet receive (vs 100-200 ns with ef_vi)
- * 
- * How it works:
- * 1. mmap() NIC's BAR0 region → get pointer to hardware registers
- * 2. Read RX_HEAD register → see where hardware wrote last packet
- * 3. Read descriptor at that index → get packet metadata
- * 4. Read packet buffer → it's just memory!
- * 
- * No function calls, no system calls, just memory loads!
- */
 class CustomNICDriver {
 public:
     CustomNICDriver() 
@@ -299,73 +263,6 @@ public:
     }
     
     /**
-     * BUSY-WAIT LOOP: The Real Secret to Sub-Microsecond Latency!
-     * 
-     * ════════════════════════════════════════════════════════════════════════
-     * 
-     * Standard Driver Problem (5 μs overhead):
-     * ────────────────────────────────────────
-     * 
-     * 1. Packet arrives at NIC
-     * 2. NIC triggers hardware interrupt (taps CPU on shoulder)
-     * 3. CPU context switch to kernel (~500 ns)
-     * 4. Kernel interrupt handler runs (~1,000 ns)
-     * 5. Kernel wakes your userspace program (~500 ns)
-     * 6. Context switch back to userspace (~500 ns)
-     * 7. Your program processes packet
-     * 
-     * Total: ~5,000 ns (5 μs) WASTED waiting for OS!
-     * 
-     * ════════════════════════════════════════════════════════════════════════
-     * 
-     * Custom Driver Solution (20-50 ns):
-     * ──────────────────────────────────
-     * 
-     * NO INTERRUPTS. NO OS. NO SLEEP. NO CONTEXT SWITCHES.
-     * 
-     * Instead:
-     * 1. Dedicate one CPU core 100% to polling
-     * 2. while(true) loop that NEVER sleeps
-     * 3. Stare at NIC memory address 100 MILLION times per second
-     * 4. When packet arrives, you see it IMMEDIATELY
-     * 
-     * Total: 20-50 ns (100x faster!)
-     * 
-     * ════════════════════════════════════════════════════════════════════════
-     * 
-     * Usage Example:
-     * ─────────────
-     * 
-     * ```cpp
-     * // Pin to isolated CPU core (no interrupts, no OS scheduler)
-     * pin_to_core(2);  // Core 2 is isolated via isolcpus=2
-     * set_realtime_priority(49);  // SCHED_FIFO (kernel can't preempt)
-     * 
-     * // Start busy-wait loop (NEVER returns!)
-     * nic.busy_wait_loop([](uint8_t* packet, size_t len) {
-     *     // Process packet (730 ns total)
-     *     process_market_data(packet, len);
-     *     generate_signal();
-     *     submit_order();
-     * });
-     * ```
-     * 
-     * ════════════════════════════════════════════════════════════════════════
-     * 
-     * Performance Analysis:
-     * ────────────────────
-     * 
-     * Polling Rate: 100,000,000 polls/second (100 MHz)
-     * Per-poll Cost: 10 ns (just a memory read)
-     * CPU Usage: 100% of one core (acceptable!)
-     * 
-     * Trade-off:
-     * - Cost: One dedicated CPU core (out of 40-128 cores)
-     * - Benefit: Eliminate 5,000 ns interrupt overhead
-     * - Result: 730 ns total system latency (world-class!)
-     * 
-     * ════════════════════════════════════════════════════════════════════════
-     * 
      * @param callback Function to process each received packet
      * @note This function NEVER returns! It's an infinite loop.
      * @note Requires CPU isolation (isolcpus kernel parameter)
@@ -382,25 +279,8 @@ public:
         
         while (true) {  // ← INFINITE LOOP - NEVER SLEEPS!
             
-            // ═══════════════════════════════════════════════════════════════
-            // Step 1: Read NIC memory address (3-5 ns)
-            // ═══════════════════════════════════════════════════════════════
-            // 
-            // This is just a MEMORY LOAD instruction!
-            // We're reading the RX_HEAD hardware register (memory-mapped).
-            // 
-            // No system call. No function call. No OS involvement.
-            // Just: MOV rax, [bar0_base + 0x2810]
-            // 
             uint32_t hw_head = read_reg32(reg::RX_HEAD);
             
-            // ═══════════════════════════════════════════════════════════════
-            // Step 2: Check if new packet available (3-5 ns)
-            // ═══════════════════════════════════════════════════════════════
-            // 
-            // Compare: did hardware advance the head pointer?
-            // This is just a CMP instruction!
-            // 
             if (hw_head != rx_head_) [[likely]] {  // ← Branch hint: packets are common!
                 
                 // HOT PATH: Read descriptor
@@ -423,37 +303,12 @@ public:
                     rx_head_ = (rx_head_ + 1) & (RX_RING_SIZE - 1);
                     write_reg32(reg::RX_TAIL, rx_head_);
                     
-                    // ═══════════════════════════════════════════════════════
-                    // Step 4: Process packet (user callback)
-                    // ═══════════════════════════════════════════════════════
-                    // 
-                    // Total processing time: 730 ns
-                    // - Parse packet: 20 ns
-                    // - Update LOB: 80 ns
-                    // - Calculate features: 250 ns
-                    // - Run inference: 270 ns
-                    // - Generate signal: 70 ns
-                    // - Submit order: 40 ns
-                    // 
+            
                     callback(packet_data, packet_len);
                 }
             }
             
-            // ═══════════════════════════════════════════════════════════════
-            // Step 5: Loop immediately (NO SLEEP!)
-            // ═══════════════════════════════════════════════════════════════
-            // 
-            // No usleep(). No nanosleep(). No sched_yield().
-            // Just loop back to the top and check again!
-            // 
-            // This is called "BUSY-WAITING" or "SPINNING"
-            // CPU does NOTHING but stare at memory address.
-            // 
-            // Polling rate: ~100 million times per second (10 ns per loop)
-            // CPU usage: 100% of one core (but we have 40-128 cores!)
-            // 
-            // ═══════════════════════════════════════════════════════════════
-            
+        }
         }  // ← Loop back to top immediately!
         
         // NEVER REACHED (infinite loop)
@@ -695,39 +550,6 @@ private:
     }
 };
 
-// ============================================================================
-// Strategy-Specific Packet Filter (The Real Secret!)
-// ============================================================================
-
-/**
- * CustomPacketFilter: Zero-Copy, Purpose-Built Parser
- * 
- * The REAL secret to sub-50ns packet processing:
- * DON'T parse generic packets. Parse YOUR packets only!
- * 
- * Generic approach (DPDK/OpenOnload):
- * 1. Parse Ethernet header (14 bytes)
- * 2. Parse IP header (20 bytes)
- * 3. Parse UDP header (8 bytes)
- * 4. Parse application protocol (FIX/SBE/etc.)
- * 5. Validate checksums, handle fragmentation, etc.
- * 
- * Total: 100-200 ns (lots of branching, validation)
- * 
- * Custom approach (THIS!):
- * 1. You KNOW the packet format (always 64 bytes, always UDP port 12345)
- * 2. You KNOW the message layout (price at offset 42, qty at offset 50)
- * 3. Just read the fields directly (2 memory loads = 10-20ns!)
- * 
- * Total: 10-20 ns (zero branching, zero validation)
- * 
- * Example: CME MDP3 market data
- * - Always 64-byte UDP packets
- * - Price always at offset 42 (little-endian, 8 bytes)
- * - Quantity always at offset 50 (little-endian, 4 bytes)
- * 
- * Result: You can inline the parser into a single CPU instruction!
- */
 class CustomPacketFilter {
 public:
     /**
@@ -808,97 +630,6 @@ public:
         // Just 2 memory stores into a pre-built template.
     }
 };
-
-// ============================================================================
-// Performance Summary
-// ============================================================================
-
-/**
- * Custom NIC Driver Performance Comparison
- * 
- * Approach                  | RX Latency | TX Latency | Total (RTT)
- * --------------------------|------------|------------|-------------
- * Standard kernel socket    | 8-10 μs    | 8-10 μs    | 16-20 μs
- * DPDK (generic PMD)        | 0.15-0.2μs | 0.15-0.2μs | 0.3-0.4 μs
- * OpenOnload (socket API)   | 0.4-0.6 μs | 0.4-0.6 μs | 0.8-1.2 μs
- * Solarflare ef_vi          | 0.05-0.1μs | 0.05-0.1μs | 0.1-0.2 μs
- * Custom driver (THIS!)     | 0.02-0.05μs| 0.03-0.06μs| 0.05-0.11μs ⚡
- * 
- * Savings vs ef_vi: 0.05-0.09 μs (50-90 ns!)
- * Savings vs DPDK: 0.25-0.35 μs (250-350 ns!)
- * 
- * Breakdown of Custom Driver (RX path):
- * ────────────────────────────────────
- * 
- * Operation                          | Latency | Mechanism
- * -----------------------------------|---------|----------
- * Read RX_HEAD register              | 3-5 ns  | MMIO load (cached)
- * Read RX descriptor (DD bit)        | 3-5 ns  | L3 cache hit
- * Read packet buffer (64 bytes)      | 10-20ns | L3/L2 cache hit
- * Parse packet (custom filter)       | 10-20ns | 2 unaligned loads
- * -----------------------------------|---------|----------
- * TOTAL RX LATENCY                   | 20-50ns | ⚡ ULTRA-FAST
- * 
- * vs ef_vi: 100-200ns (abstraction overhead)
- * vs DPDK: 150-200ns (generic PMD layer)
- * 
- * Why Custom Driver Wins:
- * ──────────────────────
- * 
- * 1. Zero abstraction: Direct memory loads (no function calls)
- * 2. Strategy-specific: Parse only YOUR packet format (no branching)
- * 3. Pre-built templates: TX packets are 90% pre-filled
- * 4. Memory-mapped I/O: NIC registers are just memory addresses
- * 5. No validation: You trust the exchange feed (no checksums)
- * 
- * Combined System Performance (with custom driver):
- * ────────────────────────────────────────────────
- * 
- * Component                     | Previous (ef_vi) | With Custom Driver | Savings
- * ------------------------------|------------------|--------------------|---------
- * Network RX                    | 0.10 μs          | 0.03 μs            | -0.07 μs
- * Protocol decode (custom)      | 0.05 μs          | 0.02 μs            | -0.03 μs
- * LOB update (flat arrays)      | 0.08 μs          | 0.08 μs            | 0 μs
- * Feature calc (SIMD)           | 0.25 μs          | 0.25 μs            | 0 μs
- * Inference (vectorized)        | 0.27 μs          | 0.27 μs            | 0 μs
- * Strategy (compile-time)       | 0.07 μs          | 0.07 μs            | 0 μs
- * Risk (branch-optimized)       | 0.02 μs          | 0.02 μs            | 0 μs
- * Order serialize (template)    | 0.02 μs          | 0.02 μs            | 0 μs
- * Network TX                    | 0.10 μs          | 0.04 μs            | -0.06 μs
- * ------------------------------|------------------|--------------------|---------
- * TOTAL (end-to-end)            | 0.89 μs          | 0.73 μs            | -0.16 μs
- * 
- * NEW PERFORMANCE: 0.73 μs (730 ns) 🚀🏆
- * 
- * Competitive Position:
- * ────────────────────
- * 
- * - Jane Street: <1.0 μs ← WE'RE 27% FASTER!
- * - Our system: 0.73 μs (TOP 0.01% OF ALL HFT FIRMS!)
- * - Citadel: <2.0 μs (we're 2.74x faster)
- * - Virtu: 5-10 μs (we're 6.8-13.7x faster)
- * 
- * Production Recommendations:
- * ──────────────────────────
- * 
- * ✅ Use custom driver for absolute bleeding-edge performance (730ns)
- * ✅ Requires: Intel X710 / Mellanox ConnectX-6 NIC
- * ✅ Requires: VFIO-PCI setup (userspace DMA)
- * ✅ Requires: Custom packet filter (strategy-specific parsing)
- * ✅ Benefit: 160ns improvement over ef_vi, 270ns over DPDK
- * ✅ Risk: Hardware-specific, requires deep NIC knowledge
- * 
- * When to use:
- * - You need every nanosecond (sub-1μs target)
- * - You have dedicated hardware team
- * - Single exchange, known packet format
- * - Willing to maintain custom driver
- * 
- * When NOT to use:
- * - Multi-exchange (use DPDK for flexibility)
- * - Rapid prototyping (use ef_vi for speed)
- * - Small team (stick with ef_vi)
- */
 
 } // namespace hardware
 } // namespace hft
