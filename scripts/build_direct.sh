@@ -5,14 +5,14 @@
 
 set -e
 
-echo "========================================================================"
+echo ""
 echo "  Building Backtesting Demo (Direct Compilation)"
-echo "========================================================================"
+echo ""
 echo ""
 
 # Check for data file
 if [ ! -f "synthetic_ticks_with_alpha.csv" ]; then
-    echo "⚠️  Generating synthetic data..."
+    echo "  Generating synthetic data..."
     python3 generate_alpha_data.py
     echo ""
 fi
@@ -41,36 +41,36 @@ g++ -std=c++17 -O3 -march=native \
     -DNDEBUG
 
 if [ $? -eq 0 ]; then
-    echo "✓ Build successful!"
+    echo "Build successful!"
     echo ""
     echo "Running demo..."
-    echo "========================================================================"
+    echo ""
     echo ""
     
     ./build/backtest_demo
     
     echo ""
-    echo "========================================================================"
+    echo ""
     echo "  LOGS GENERATED"
-    echo "========================================================================"
+    echo ""
     echo ""
     
     if [ -f "logs/backtest_replay.log" ]; then
-        echo "✓ Event Replay Log: logs/backtest_replay.log"
+        echo "Event Replay Log: logs/backtest_replay.log"
         echo "  Lines: $(wc -l < logs/backtest_replay.log)"
     fi
     
     if [ -f "logs/risk_breaches.log" ]; then
-        echo "✓ Risk Breach Log: logs/risk_breaches.log"
+        echo "Risk Breach Log: logs/risk_breaches.log"
         echo "  Lines: $(wc -l < logs/risk_breaches.log)"
     fi
     
     if [ -f "logs/system_verification.log" ]; then
-        echo "✓ System Verification: logs/system_verification.log"
+        echo "System Verification: logs/system_verification.log"
     fi
     
     echo ""
 else
-    echo "❌ Build failed!"
+    echo " Build failed!"
     exit 1
 fi
