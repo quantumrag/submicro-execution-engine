@@ -7,7 +7,7 @@ Separate the custom NIC driver code into a standalone, reusable library for high
 
 ---
 
-## 🎯 Repository Scope
+##  Repository Scope
 
 ### Files to Extract from SubMicro Engine:
 
@@ -83,7 +83,7 @@ ultra-low-latency-nic-drivers/
 
 ---
 
-## 🚀 Key Features to Highlight
+##  Key Features to Highlight
 
 ### **Performance**
 - **Custom Driver**: 20-50ns packet receive latency
@@ -98,7 +98,7 @@ Standard Socket     | 10-20 μs    | 1 Gbps       | Low
 DPDK (generic)      | 200-400 ns  | 10 Gbps      | Medium
 OpenOnload          | 800-1200 ns | 10 Gbps      | Medium
 Solarflare ef_vi    | 100-200 ns  | 10 Gbps      | High
-Custom Driver       | 20-50 ns ⚡  | 10+ Gbps     | Very High
+Custom Driver       | 20-50 ns  | 10+ Gbps     | Very High
 ```
 
 ### **Hardware Support**
@@ -167,7 +167,7 @@ Zero-abstraction network drivers for high-frequency trading achieving
 
 ---
 
-## 🛠️ Build System
+##  Build System
 
 ### **CMakeLists.txt**
 ```cmake
@@ -208,7 +208,7 @@ install(DIRECTORY include/ DESTINATION include)
 
 ---
 
-## 📊 Benchmarks to Include
+## Benchmarks to Include
 
 ### **1. Latency Benchmark**
 ```cpp
@@ -231,7 +231,7 @@ install(DIRECTORY include/ DESTINATION include)
 
 ---
 
-## 🎓 Example Code
+## Example Code
 
 ### **Basic Usage Example**
 ```cpp
@@ -271,7 +271,7 @@ int main() {
 
 ---
 
-## 🔧 Dependencies
+## Dependencies
 
 ### **Required**
 - C++17 compiler (GCC 9+ or Clang 10+)
@@ -322,7 +322,7 @@ target_link_libraries(trading_system PRIVATE ull_nic)
 
 ---
 
-## 🎯 Target Audience
+##  Target Audience
 
 1. **High-Frequency Trading Firms**
    - Need sub-microsecond latency
@@ -346,7 +346,7 @@ target_link_libraries(trading_system PRIVATE ull_nic)
 
 ---
 
-## 📈 Marketing Points
+##  Marketing Points
 
 ### **GitHub README Badges**
 ```markdown
@@ -357,16 +357,16 @@ target_link_libraries(trading_system PRIVATE ull_nic)
 ```
 
 ### **Key Technical Features**
-- ⚡ **20-50ns packet receive latency** - Measured with TSC timestamps
-- 🚀 **Zero abstraction** - Direct memory-mapped hardware access
-- 🔓 **MIT Licensed** - Free for commercial use
-- 📚 **Well documented** - Complete setup guides and examples
-- 🔬 **Reference implementation** - Used in research framework
-- 🎓 **Educational** - Learn NIC internals and kernel bypass
+- **20-50ns packet receive latency** - Measured with TSC timestamps
+-  **Zero abstraction** - Direct memory-mapped hardware access
+-  **MIT Licensed** - Free for commercial use
+-  **Well documented** - Complete setup guides and examples
+-  **Reference implementation** - Used in research framework
+- **Educational** - Learn NIC internals and kernel bypass
 
 ---
 
-## 🚀 Next Steps
+##  Next Steps
 
 1. **Create Repository**
    ```bash
@@ -406,4 +406,4 @@ target_link_libraries(trading_system PRIVATE ull_nic)
 
 ---
 
-This will be a **significant open-source contribution** to the HFT/low-latency networking community! 🎉
+This will be a **significant open-source contribution** to the HFT/low-latency networking community! 
