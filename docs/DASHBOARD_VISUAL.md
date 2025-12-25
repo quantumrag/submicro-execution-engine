@@ -1,10 +1,10 @@
-# 📊 Dashboard Visual Reference
+# Dashboard Visual Reference
 
 ## Live Dashboard Screenshot (ASCII Art)
 
 ```
 ╔══════════════════════════════════════════════════════════════════════════╗
-║                   🚀 HFT Trading System Dashboard                        ║
+║                    HFT Trading System Dashboard                        ║
 ╠══════════════════════════════════════════════════════════════════════════╣
 ║                                                                          ║
 ║  ● Connected  |  Latency: 847 μs  |  Regime: [NORMAL] 1.0×             ║
@@ -234,11 +234,11 @@ Smooth 60 FPS rendering
 
 ## Browser Compatibility
 
-✅ Chrome 90+  
-✅ Firefox 88+  
-✅ Safari 14+  
-✅ Edge 90+  
-✅ Opera 76+  
+ Chrome 90+  
+ Firefox 88+  
+ Safari 14+  
+ Edge 90+  
+ Opera 76+  
 
 Required features:
 - WebSocket API (all modern browsers)
