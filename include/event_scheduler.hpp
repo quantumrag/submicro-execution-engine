@@ -10,11 +10,11 @@
 namespace hft {
 namespace scheduler {
 
-// ============================================================================
+// ====
 // Nanosecond-Precision Event Scheduler
 // Deterministic, garbage-free event scheduling for ultra-low latency
 // Uses timing wheel algorithm for O(1) insertions and deletions
-// ============================================================================
+// ====
 
 struct ScheduledEvent {
     Timestamp execution_time;
@@ -31,10 +31,10 @@ struct ScheduledEvent {
           callback(std::move(cb)), is_cancelled(false) {}
 };
 
-// ============================================================================
+// ====
 // Hierarchical Timing Wheel
 // Efficiently schedules events across multiple time scales
-// ============================================================================
+// ====
 
 class TimingWheelScheduler {
 public:
@@ -54,10 +54,10 @@ public:
         }
     }
     
-    // ========================================================================
+    // 
     // Schedule event at absolute time
     // Returns: event_id for cancellation
-    // ========================================================================
+    // 
     uint64_t schedule_at(Timestamp exec_time, std::function<void()> callback) {
         const int64_t delay_ns = to_nanos(exec_time) - to_nanos(now());
         
@@ -70,9 +70,9 @@ public:
         return schedule_after(std::chrono::nanoseconds(delay_ns), std::move(callback));
     }
     
-    // ========================================================================
+    // 
     // Schedule event after delay (relative)
-    // ========================================================================
+    // 
     uint64_t schedule_after(Duration delay, std::function<void()> callback) {
         const uint64_t event_id = next_event_id_.fetch_add(1, std::memory_order_relaxed);
         
@@ -90,9 +90,9 @@ public:
         return event_id;
     }
     
-    // ========================================================================
+    // 
     // Cancel scheduled event
-    // ========================================================================
+    // 
     void cancel(uint64_t event_id) {
         // Mark as cancelled (actual removal happens during execution)
         for (auto& slot : wheel_) {
@@ -105,10 +105,10 @@ public:
         }
     }
     
-    // ========================================================================
+    // 
     // Tick the scheduler (call every slot_duration)
     // Executes all events in current slot
-    // ========================================================================
+    // 
     void tick() {
         auto& current_events = wheel_[current_slot_];
         const Timestamp current_time = now();
@@ -130,9 +130,9 @@ public:
         current_slot_ = (current_slot_ + 1) % num_slots_;
     }
     
-    // ========================================================================
+    // 
     // Process events until time (busy-wait for determinism)
-    // ========================================================================
+    // 
     void process_until(Timestamp target_time) {
         while (to_nanos(now()) < to_nanos(target_time)) {
             tick();
@@ -147,9 +147,9 @@ public:
         }
     }
     
-    // ========================================================================
+    // 
     // Get pending event count
-    // ========================================================================
+    // 
     size_t get_pending_count() const {
         size_t count = 0;
         for (const auto& slot : wheel_) {
@@ -171,10 +171,10 @@ private:
     Timestamp start_time_;
 };
 
-// ============================================================================
+// ====
 // Priority-Based Event Queue (for non-time-based events)
 // Garbage-free using pre-allocated memory pool
-// ============================================================================
+// ====
 
 template<typename EventType, size_t MaxEvents = 4096>
 class PriorityEventQueue {
@@ -195,9 +195,9 @@ public:
         events_.reserve(MaxEvents);
     }
     
-    // ========================================================================
+    // 
     // Add event with priority
-    // ========================================================================
+    // 
     bool push(const EventType& event, uint64_t priority) {
         if (event_count_ >= MaxEvents) {
             return false;  // Queue full
@@ -215,9 +215,9 @@ public:
         return true;
     }
     
-    // ========================================================================
+    // 
     // Get highest priority event
-    // ========================================================================
+    // 
     bool pop(EventType& event) {
         while (!events_.empty()) {
             std::pop_heap(events_.begin(), events_.end());
@@ -236,9 +236,9 @@ public:
         return false;
     }
     
-    // ========================================================================
+    // 
     // Peek at highest priority
-    // ========================================================================
+    // 
     bool peek(EventType& event) const {
         if (events_.empty()) {
             return false;
@@ -260,10 +260,10 @@ private:
     size_t event_count_;
 };
 
-// ============================================================================
+// ====
 // Deterministic Event Loop
 // Combines timing wheel + priority queue for complete event management
-// ============================================================================
+// ====
 
 class DeterministicEventLoop {
 public:
