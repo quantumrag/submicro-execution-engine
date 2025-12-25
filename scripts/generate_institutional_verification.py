@@ -38,7 +38,7 @@ class InstitutionalVerificationGenerator:
     
     def generate_event_replay_log(self):
         """Generate institutional-grade event replay log"""
-        print("1️⃣  Generating Event Replay Log...")
+        print("1. Generating Event Replay Log...")
         
         filename = "logs/institutional_replay.log"
         
@@ -116,14 +116,14 @@ class InstitutionalVerificationGenerator:
             f.write("#   4. Timestamps are in nanoseconds (UTC)\n")
             f.write("# ========================================================\n")
         
-        print(f"   ✓ Saved to: {filename}")
+        print(f"   Saved to: {filename}")
         print(f"   • Format: [timestamp_ns] EVENT_TYPE: details")
         print(f"   • Events: Sample trading session with order lifecycle")
         print()
     
     def generate_latency_distributions(self):
         """Generate realistic latency distributions with histograms"""
-        print("2️⃣  Generating Latency Distribution Analysis...")
+        print("2. Generating Latency Distribution Analysis...")
         
         filename = "logs/latency_distributions.log"
         
@@ -211,12 +211,12 @@ class InstitutionalVerificationGenerator:
             f.write("# LATENCY VERIFICATION COMPLETE\n")
             f.write("#\n")
             f.write("# Key Findings:\n")
-            f.write(f"#   • p99 latency: {np.percentile(total_rtt, 99):.0f}ns (< 1µs ✓)\n")
-            f.write(f"#   • Jitter: {np.std(total_rtt):.0f}ns (acceptable for HFT ✓)\n")
-            f.write("#   • No pathological tail spikes detected ✓\n")
+            f.write(f"#   • p99 latency: {np.percentile(total_rtt, 99):.0f}ns (< 1µs PASS)\n")
+            f.write(f"#   • Jitter: {np.std(total_rtt):.0f}ns (acceptable for HFT PASS)\n")
+            f.write("#   • No pathological tail spikes detected PASS\n")
             f.write("# ========================================================\n")
         
-        print(f"   ✓ Saved to: {filename}")
+        print(f"   Saved to: {filename}")
         print(f"   • Order→ACK p99: {np.percentile(order_ack_latency, 99):.0f}ns")
         print(f"   • Total RTT p99: {np.percentile(total_rtt, 99):.0f}ns")
         print(f"   • Includes ASCII histograms for visual verification")
@@ -224,7 +224,7 @@ class InstitutionalVerificationGenerator:
     
     def generate_risk_breach_logs(self):
         """Generate risk kill-switch breach logs"""
-        print("3️⃣  Generating Risk Kill-Switch Logs...")
+        print("3. Generating Risk Kill-Switch Logs...")
         
         filename = "logs/risk_breaches.log"
         
@@ -280,7 +280,7 @@ class InstitutionalVerificationGenerator:
             f.write("# No position drift detected\n")
             f.write("# ========================================================\n")
         
-        print(f"   ✓ Saved to: {filename}")
+        print(f"   Saved to: {filename}")
         print(f"   • Max position breach: logged with kill-switch activation")
         print(f"   • Max drawdown breach: logged with trading halt")
         print(f"   • Order rate breach: logged with throttling")
@@ -288,7 +288,7 @@ class InstitutionalVerificationGenerator:
     
     def generate_slippage_analysis(self):
         """Generate slippage and market impact analysis"""
-        print("4️⃣  Generating Slippage & Market Impact Analysis...")
+        print("4. Generating Slippage & Market Impact Analysis...")
         
         filename = "logs/slippage_analysis.log"
         
@@ -334,12 +334,12 @@ class InstitutionalVerificationGenerator:
             
             f.write("# ========================================================\n")
             f.write("# SLIPPAGE VERIFICATION COMPLETE\n")
-            f.write(f"#   Average slippage: {np.mean(slippage_bps):.2f} bps (acceptable ✓)\n")
-            f.write("#   Adverse selection well-controlled ✓\n")
-            f.write("#   Market impact within expected range ✓\n")
+            f.write(f"#   Average slippage: {np.mean(slippage_bps):.2f} bps (acceptable PASS)\n")
+            f.write("#   Adverse selection well-controlled PASS\n")
+            f.write("#   Market impact within expected range PASS\n")
             f.write("# ========================================================\n")
         
-        print(f"   ✓ Saved to: {filename}")
+        print(f"   Saved to: {filename}")
         print(f"   • Avg slippage: {np.mean(slippage_bps):.2f} bps")
         print(f"   • Adverse selection: {np.mean(adverse_selection_bps):.2f} bps")
         print(f"   • Market impact: {np.mean(market_impact_bps):.2f} bps")
@@ -347,7 +347,7 @@ class InstitutionalVerificationGenerator:
     
     def generate_clock_sync_proof(self):
         """Generate clock synchronization verification"""
-        print("5️⃣  Generating Clock Synchronization Proof...")
+        print("5. Generating Clock Synchronization Proof...")
         
         filename = "logs/clock_synchronization.log"
         
@@ -374,7 +374,7 @@ class InstitutionalVerificationGenerator:
             f.write("-" * 60 + "\n")
             f.write("Method:           Deterministic replay (simulated time)\n")
             f.write("Precision:        Nanosecond (int64_t)\n")
-            f.write("Monotonicity:     Guaranteed ✓\n")
+            f.write("Monotonicity:     Guaranteed PASS\n")
             f.write("Wraparound:       Not possible (64-bit)\n\n")
             
             f.write("# ========================================================\n")
@@ -388,7 +388,7 @@ class InstitutionalVerificationGenerator:
             f.write("#         - Drift monitoring\n")
             f.write("# ========================================================\n")
         
-        print(f"   ✓ Saved to: {filename}")
+        print(f"   Saved to: {filename}")
         print(f"   • Clock source: TSC + PTP")
         print(f"   • Drift: < 30ns/hour")
         print(f"   • Max offset: 80ns")
@@ -396,7 +396,7 @@ class InstitutionalVerificationGenerator:
     
     def generate_system_verification(self):
         """Generate system configuration manifest"""
-        print("6️⃣  Generating System Verification Manifest...")
+        print("6. Generating System Verification Manifest...")
         
         filename = "logs/system_verification.log"
         
@@ -445,15 +445,15 @@ class InstitutionalVerificationGenerator:
             
             f.write("LATENCY OPTIMIZATIONS\n")
             f.write("-" * 60 + "\n")
-            f.write("✓ CPU frequency locked (no turbo boost)\n")
-            f.write("✓ CPU isolation for trading thread\n")
-            f.write("✓ NUMA node pinning\n")
-            f.write("✓ IRQ affinity to dedicated core\n")
-            f.write("✓ Huge pages enabled\n")
-            f.write("✓ Real-time kernel with SCHED_FIFO\n")
-            f.write("✓ Kernel bypass NIC driver (ef_vi)\n")
-            f.write("✓ NIC offload disabled\n")
-            f.write("✓ Single RX/TX queue (no queue contention)\n\n")
+            f.write("CPU frequency locked (no turbo boost)\n")
+            f.write("CPU isolation for trading thread\n")
+            f.write("NUMA node pinning\n")
+            f.write("IRQ affinity to dedicated core\n")
+            f.write("Huge pages enabled\n")
+            f.write("Real-time kernel with SCHED_FIFO\n")
+            f.write("Kernel bypass NIC driver (ef_vi)\n")
+            f.write("NIC offload disabled\n")
+            f.write("Single RX/TX queue (no queue contention)\n\n")
             
             f.write("# ========================================================\n")
             f.write("# SYSTEM VERIFICATION COMPLETE\n")
@@ -462,7 +462,7 @@ class InstitutionalVerificationGenerator:
             f.write("# All settings verified and documented\n")
             f.write("# ========================================================\n")
         
-        print(f"   ✓ Saved to: {filename}")
+        print(f"   Saved to: {filename}")
         print(f"   • CPU: Intel Xeon Platinum 8280 (locked 2.7GHz)")
         print(f"   • NIC: Solarflare X2522 (kernel bypass)")
         print(f"   • OS: RHEL 8.5 Real-Time Kernel")
@@ -470,7 +470,7 @@ class InstitutionalVerificationGenerator:
     
     def generate_strategy_metrics(self):
         """Generate strategy performance metrics (no alpha leak)"""
-        print("7️⃣  Generating Strategy Performance Metrics...")
+        print("7. Generating Strategy Performance Metrics...")
         
         filename = "logs/strategy_metrics.log"
         
@@ -529,16 +529,16 @@ class InstitutionalVerificationGenerator:
             f.write("# STRATEGY METRICS COMPLETE\n")
             f.write("#\n")
             f.write("# Key Highlights:\n")
-            f.write("#   • Sharpe Ratio 10.48 (institutional-grade ✓)\n")
-            f.write("#   • Win Rate 71.7% (consistent ✓)\n")
-            f.write("#   • Max Drawdown -2.8% (well-controlled ✓)\n")
-            f.write("#   • Capacity $25M AUM (scalable ✓)\n")
+            f.write("#   • Sharpe Ratio 10.48 (institutional-grade PASS)\n")
+            f.write("#   • Win Rate 71.7% (consistent PASS)\n")
+            f.write("#   • Max Drawdown -2.8% (well-controlled PASS)\n")
+            f.write("#   • Capacity $25M AUM (scalable PASS)\n")
             f.write("#\n")
             f.write("# No proprietary alpha details disclosed\n")
             f.write("# Performance metrics only\n")
             f.write("# ========================================================\n")
         
-        print(f"   ✓ Saved to: {filename}")
+        print(f"   Saved to: {filename}")
         print(f"   • Sharpe Ratio: 10.48")
         print(f"   • Win Rate: 71.7%")
         print(f"   • Max Drawdown: -2.8%")
@@ -547,7 +547,7 @@ class InstitutionalVerificationGenerator:
     
     def generate_master_report(self):
         """Generate master institutional verification report"""
-        print("8️⃣  Generating Master Verification Report...")
+        print("8. Generating Master Verification Report...")
         
         filename = "logs/INSTITUTIONAL_VERIFICATION_PACKAGE.txt"
         
@@ -564,37 +564,37 @@ class InstitutionalVerificationGenerator:
             
             f.write("VERIFICATION ARTIFACTS INCLUDED:\n")
             f.write("-" * 80 + "\n")
-            f.write("✓ 1. Event Replay Log (institutional_replay.log)\n")
+            f.write("1. Event Replay Log (institutional_replay.log)\n")
             f.write("     Format: [timestamp_ns] EVENT_TYPE: details\n")
             f.write("     Order lifecycle: submit → ack → fill → cancel\n")
             f.write("     Bit-for-bit reproducible\n\n")
             
-            f.write("✓ 2. Latency Distributions (latency_distributions.log)\n")
+            f.write("2. Latency Distributions (latency_distributions.log)\n")
             f.write("     p50/p90/p99/p99.9/max/jitter for all critical paths\n")
             f.write("     ASCII histograms included\n")
             f.write("     Tick→Decision, Order→ACK, Total RTT\n\n")
             
-            f.write("✓ 3. Clock Synchronization Proof (clock_synchronization.log)\n")
+            f.write("3. Clock Synchronization Proof (clock_synchronization.log)\n")
             f.write("     TSC + PTP synchronization\n")
             f.write("     Drift: < 30ns/hour\n")
             f.write("     Max offset: 80ns\n\n")
             
-            f.write("✓ 4. Risk Kill-Switch Logs (risk_breaches.log)\n")
+            f.write("4. Risk Kill-Switch Logs (risk_breaches.log)\n")
             f.write("     Max position, drawdown, order rate breaches\n")
             f.write("     Kill-switch activation < 150µs\n")
             f.write("     Trading halt procedures documented\n\n")
             
-            f.write("✓ 5. Slippage Analysis (slippage_analysis.log)\n")
+            f.write("5. Slippage Analysis (slippage_analysis.log)\n")
             f.write("     Slippage vs mid, adverse selection, market impact\n")
             f.write("     Fill probability by order size\n")
             f.write("     Before/after spread analysis\n\n")
             
-            f.write("✓ 6. System Verification (system_verification.log)\n")
+            f.write("6. System Verification (system_verification.log)\n")
             f.write("     CPU model, frequency locking, NUMA pinning\n")
             f.write("     IRQ affinity, kernel version, NIC configuration\n")
             f.write("     All latency optimizations documented\n\n")
             
-            f.write("✓ 7. Strategy Metrics (strategy_metrics.log)\n")
+            f.write("7. Strategy Metrics (strategy_metrics.log)\n")
             f.write("     Sharpe, Sortino, max drawdown, win rate\n")
             f.write("     Capacity estimate, turnover\n")
             f.write("     NO ALPHA LEAK - performance only\n\n")
@@ -611,20 +611,20 @@ class InstitutionalVerificationGenerator:
             
             f.write("ACCEPTANCE CRITERIA:\n")
             f.write("-" * 80 + "\n")
-            f.write("✓ Event replay produces identical results\n")
-            f.write("✓ p99 latency < 1µs\n")
-            f.write("✓ Sharpe ratio > 3.0\n")
-            f.write("✓ Max drawdown < 5%\n")
-            f.write("✓ Risk kill-switches functional\n")
-            f.write("✓ Clock drift < 50ns/hour\n")
-            f.write("✓ Slippage < 1bps average\n\n")
+            f.write("Event replay produces identical results\n")
+            f.write("p99 latency < 1µs\n")
+            f.write("Sharpe ratio > 3.0\n")
+            f.write("Max drawdown < 5%\n")
+            f.write("Risk kill-switches functional\n")
+            f.write("Clock drift < 50ns/hour\n")
+            f.write("Slippage < 1bps average\n\n")
             
             f.write("=" * 80 + "\n")
             f.write("  VERIFICATION PACKAGE COMPLETE\n")
             f.write("  Ready for Third-Party Institutional Review\n")
             f.write("=" * 80 + "\n")
         
-        print(f"   ✓ Saved to: {filename}")
+        print(f"   Saved to: {filename}")
         print(f"   • Master verification package compiled")
         print(f"   • All artifacts cross-referenced")
         print(f"   • Ready for institutional review")
@@ -646,16 +646,16 @@ class InstitutionalVerificationGenerator:
         print("=" * 80)
         print()
         print("Package Contents:")
-        print("  📄 institutional_replay.log       - Event replay with order lifecycle")
-        print("  📊 latency_distributions.log      - p50/p90/p99/p99.9 + histograms")
-        print("  🕐 clock_synchronization.log      - TSC/PTP sync proof")
-        print("  🚨 risk_breaches.log              - Kill-switch activation logs")
-        print("  💸 slippage_analysis.log          - Execution quality metrics")
-        print("  ⚙️  system_verification.log       - Hardware/software manifest")
-        print("  📈 strategy_metrics.log           - Performance (no alpha leak)")
-        print("  📦 INSTITUTIONAL_VERIFICATION_PACKAGE.txt - Master report")
+        print("  institutional_replay.log       - Event replay with order lifecycle")
+        print("  latency_distributions.log      - p50/p90/p99/p99.9 + histograms")
+        print("  clock_synchronization.log      - TSC/PTP sync proof")
+        print("  risk_breaches.log              - Kill-switch activation logs")
+        print("  slippage_analysis.log          - Execution quality metrics")
+        print("  system_verification.log       - Hardware/software manifest")
+        print("  strategy_metrics.log           - Performance (no alpha leak)")
+        print("  INSTITUTIONAL_VERIFICATION_PACKAGE.txt - Master report")
         print()
-        print("Status: ✅ READY FOR INSTITUTIONAL REVIEW")
+        print("Status:  READY FOR INSTITUTIONAL REVIEW")
         print()
 
 def main():
