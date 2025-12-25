@@ -4,25 +4,25 @@
 #include "shared_memory.hpp"
 #include <cstdint>
 
-// ============================================================================
+// ====
 // C++/Rust FFI Bridge
 // Provides seamless integration between C++ core and Rust safety features
-// ============================================================================
+// ====
 
 namespace hft {
 namespace rust_ffi {
 
-// ============================================================================
+// ====
 // Opaque Rust handles (managed by Rust)
-// ============================================================================
+// ====
 
 struct RustMarketMaker;
 struct RustRiskControl;
 struct RustLockFreeQueue;
 
-// ============================================================================
+// ====
 // C++ -> Rust FFI Functions
-// ============================================================================
+// ====
 
 extern "C" {
     // Rust Market Maker
@@ -57,9 +57,9 @@ extern "C" {
     void rust_benchmark_queue_throughput();
 }
 
-// ============================================================================
+// ====
 // C++ Wrappers for Rust Components (RAII)
-// ============================================================================
+// ====
 
 class RustMarketMakerWrapper {
 public:
@@ -124,9 +124,9 @@ private:
     RustRiskControl* handle_;
 };
 
-// ============================================================================
+// ====
 // Rust -> C++ FFI Functions (exported from C++)
-// ============================================================================
+// ====
 
 extern "C" {
     // Shared memory operations
