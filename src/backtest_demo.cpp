@@ -8,9 +8,7 @@
 using namespace hft;
 using namespace hft::backtest;
 
-// ============================================================================
 // Generate synthetic historical data for testing
-// ============================================================================
 void generate_synthetic_data(const std::string& filepath, size_t num_events = 10000) {
     std::cout << "Generating synthetic historical data...\n";
     
@@ -20,16 +18,13 @@ void generate_synthetic_data(const std::string& filepath, size_t num_events = 10
         return;
     }
     
-    // Write header
     file << "timestamp_ns,asset_id,bid_price,ask_price,bid_size,ask_size,trade_volume\n";
     
-    // Random number generators
     std::mt19937 gen(42);  // Fixed seed for reproducibility
     std::normal_distribution<> price_dist(100.0, 0.5);
     std::uniform_int_distribution<> size_dist(100, 1000);
     std::uniform_int_distribution<> trade_dist(0, 100);
     
-    // Starting values
     int64_t timestamp_ns = 1000000000000000LL;  // Arbitrary start time
     double mid_price = 100.0;
     
@@ -37,9 +32,8 @@ void generate_synthetic_data(const std::string& filepath, size_t num_events = 10
         // Increment timestamp (1-10 milliseconds between events)
         timestamp_ns += (1000000LL + (i % 10) * 1000000LL);
         
-        // Random walk for price
         mid_price += (std::rand() % 100 - 50) * 0.001;
-        mid_price = std::max(50.0, std::min(150.0, mid_price));  // Bounds
+        mid_price = std::max(50.0, std::min(150.0, mid_price));
         
         // Spread (5-15 bps)
         double spread_bps = 5.0 + (std::rand() % 10);
@@ -62,12 +56,10 @@ void generate_synthetic_data(const std::string& filepath, size_t num_events = 10
     }
     
     file.close();
-    std::cout << "✓ Generated " << num_events << " events in " << filepath << "\n\n";
+    std::cout << "Generated " << num_events << " events in " << filepath << "\n\n";
 }
 
-// ============================================================================
 // Main: Run backtesting demo
-// ============================================================================
 int main(int argc, char* argv[]) {
     std::cout << "\n";
     std::cout << "═══════════════════════════════════════════════════════════════════\n";
@@ -91,9 +83,7 @@ int main(int argc, char* argv[]) {
     std::cout << "  • 17 persistent OBI bursts (15 ticks ≈ 1.5μs each)\n";
     std::cout << "  • Matches 10-tick temporal filter requirement\n";
     
-    // ========================================================================
     // Test 1: Single Backtest Run
-    // ========================================================================
     std::cout << "TEST 1: Single Backtest Run\n";
     std::cout << "───────────────────────────────────────────────────────────────────\n\n";
     
@@ -114,23 +104,21 @@ int main(int argc, char* argv[]) {
         return 1;
     }
     
-    // Run backtest
     auto metrics = engine.run_backtest();
     
-    // Print results
     metrics.print_summary();
     
-    // ========================================================================
+    // 
     // Test 2: OPTIMIZED Latency-Agnostic Verification (Balanced Approach)
     // REFINEMENT: 12-tick filter + 60% quality threshold for optimal stability
-    // ========================================================================
+    // 
     std::cout << "\n\nTEST 2: Optimized Latency-Agnostic Strategy Verification\n";
     std::cout << "───────────────────────────────────────────────────────────────────\n\n";
-    std::cout << "✓ Minimum Latency Floor: 550ns (safety buffer)\n";
-    std::cout << "✓ Temporal Filter: 12 consecutive ticks (optimized sweet spot)\n";
-    std::cout << "✓ Signal Quality Check: Current strength ≥ 60% of average\n";
-    std::cout << "✓ OBI Threshold: 9% (balanced for coverage + quality)\n";
-    std::cout << "✓ Goal: 95%+ profitable, 90%+ P&L stability\n\n";
+    std::cout << "Minimum Latency Floor: 550ns (safety buffer)\n";
+    std::cout << "Temporal Filter: 12 consecutive ticks (optimized sweet spot)\n";
+    std::cout << "Signal Quality Check: Current strength ≥ 60% of average\n";
+    std::cout << "OBI Threshold: 9% (balanced for coverage + quality)\n";
+    std::cout << "Goal: 95%+ profitable, 90%+ P&L stability\n\n";
     std::cout << "Testing comprehensive latency sweep: 100ns-2000ns\n\n";
     
     config.run_latency_sweep = true;
@@ -179,14 +167,14 @@ int main(int argc, char* argv[]) {
     double success_rate = (profitable_count * 100.0) / latency_results.size();
     double avg_pnl = (profitable_count > 0) ? total_pnl / profitable_count : 0.0;
     
-    std::cout << "📊 Strategy Performance Analysis:\n";
+    std::cout << "Strategy Performance Analysis:\n";
     std::cout << "   • Tested latencies: " << latency_results.size() << "\n";
     std::cout << "   • Profitable: " << profitable_count << " (" << std::fixed 
               << std::setprecision(1) << success_rate << "%)\n";
     std::cout << "   • Unprofitable: " << unprofitable_count << "\n\n";
     
     if (profitable_count > 0) {
-        std::cout << "   📈 Profitability Metrics:\n";
+        std::cout << "   Profitability Metrics:\n";
         std::cout << "   • Average P&L: $" << std::setprecision(2) << avg_pnl << "\n";
         std::cout << "   • Best P&L: $" << best_pnl << " @ " << best_latency << " ns\n";
         std::cout << "   • Worst P&L: $" << worst_pnl << " @ " << worst_latency << " ns\n";
@@ -194,42 +182,41 @@ int main(int argc, char* argv[]) {
         std::cout << "   • P&L Stability: " << (worst_pnl / best_pnl * 100.0) << "%\n\n";
     }
     
-    // Verdict
     if (success_rate >= 95.0 && profitable_count >= 10) {
         double pnl_stability = (worst_pnl / best_pnl * 100.0);
         
-        std::cout << "✅ SUCCESS: Strategy is LATENCY-AGNOSTIC!\n";
+        std::cout << " SUCCESS: Strategy is LATENCY-AGNOSTIC!\n";
         std::cout << "   → Profitable across " << profitable_count << " different latencies\n";
         std::cout << "   → 15-tick temporal filter + quality check eliminates toxic flow\n";
         std::cout << "   → Alpha persists through 890ns execution window\n";
         
         if (pnl_stability >= 90.0) {
-            std::cout << "   → 🏆 P&L STABILITY: " << pnl_stability << "% (EXCELLENT!)\n";
+            std::cout << "   → P&L STABILITY: " << pnl_stability << "% (EXCELLENT!)\n";
             std::cout << "   → Ready for production deployment with world-class 890ns speed\n\n";
         } else if (pnl_stability >= 80.0) {
-            std::cout << "   → ✓ P&L STABILITY: " << pnl_stability << "% (Good, acceptable)\n";
+            std::cout << "   → P&L STABILITY: " << pnl_stability << "% (Good, acceptable)\n";
             std::cout << "   → Ready for production deployment\n\n";
         } else {
-            std::cout << "   → ⚠️  P&L STABILITY: " << pnl_stability << "% (Consider refinement)\n";
+            std::cout << "   →   P&L STABILITY: " << pnl_stability << "% (Consider refinement)\n";
             std::cout << "   → May need additional signal quality filters\n\n";
         }
     } else if (success_rate >= 50.0) {
-        std::cout << "⚠️  PARTIAL SUCCESS: Strategy shows improvement\n";
+        std::cout << "  PARTIAL SUCCESS: Strategy shows improvement\n";
         std::cout << "   → " << profitable_count << "/" << latency_results.size() 
                   << " latencies profitable\n";
         std::cout << "   → Consider increasing persistence threshold (15 → 20 ticks)\n";
         std::cout << "   → Or tightening OBI threshold (10% → 12%)\n\n";
     } else {
-        std::cout << "❌ FAILURE: Strategy still has latency sensitivity\n";
+        std::cout << " FAILURE: Strategy still has latency sensitivity\n";
         std::cout << "   → Only " << profitable_count << "/" << latency_results.size() 
                   << " latencies profitable\n";
         std::cout << "   → Temporal filter may need adjustment\n";
         std::cout << "   → Consider alternative alpha sources\n\n";
     }
     
-    // ========================================================================
+    // 
     // Test 3: Determinism Verification
-    // ========================================================================
+    // 
     std::cout << "\n\nTEST 3: Determinism Verification (Bit-for-Bit Reproducibility)\n";
     std::cout << "───────────────────────────────────────────────────────────────────\n\n";
     
@@ -251,7 +238,6 @@ int main(int argc, char* argv[]) {
                   << " | Sharpe: " << result.sharpe_ratio << "\n";
     }
     
-    // Check if all results are identical
     bool is_deterministic = true;
     for (size_t i = 1; i < pnl_results.size(); ++i) {
         if (std::abs(pnl_results[i] - pnl_results[0]) > 1e-10) {
@@ -262,27 +248,24 @@ int main(int argc, char* argv[]) {
     
     std::cout << "\n";
     if (is_deterministic) {
-        std::cout << "✅ DETERMINISM VERIFIED: All runs produced identical results!\n";
+        std::cout << " DETERMINISM VERIFIED: All runs produced identical results!\n";
         std::cout << "   (Bit-for-bit reproducibility confirmed)\n";
     } else {
-        std::cout << "⚠️  WARNING: Results differ between runs (non-deterministic)\n";
+        std::cout << "  WARNING: Results differ between runs (non-deterministic)\n";
     }
     
-    // ========================================================================
-    // Summary Statistics
-    // ========================================================================
     std::cout << "\n\n";
     std::cout << "═══════════════════════════════════════════════════════════════════\n";
     std::cout << "  BACKTESTING ENGINE VALIDATION COMPLETE\n";
     std::cout << "═══════════════════════════════════════════════════════════════════\n";
     std::cout << "\n";
     
-    std::cout << "✓ Tick-accurate replay engine:      IMPLEMENTED\n";
-    std::cout << "✓ Deterministic execution:           VERIFIED\n";
-    std::cout << "✓ Fill probability modeling:         ACTIVE\n";
-    std::cout << "✓ Adverse selection simulation:      ENABLED\n";
-    std::cout << "✓ Latency sensitivity analysis:      COMPLETE\n";
-    std::cout << "✓ Performance metrics (Sharpe etc):  CALCULATED\n";
+    std::cout << "Tick-accurate replay engine:      IMPLEMENTED\n";
+    std::cout << "Deterministic execution:           VERIFIED\n";
+    std::cout << "Fill probability modeling:         ACTIVE\n";
+    std::cout << "Adverse selection simulation:      ENABLED\n";
+    std::cout << "Latency sensitivity analysis:      COMPLETE\n";
+    std::cout << "Performance metrics (Sharpe etc):  CALCULATED\n";
     std::cout << "\n";
     
     std::cout << "System ready for production backtesting!\n\n";
