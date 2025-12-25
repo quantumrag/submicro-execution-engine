@@ -1,4 +1,4 @@
-# 🎯 HFT System Real-Time Dashboard
+#  HFT System Real-Time Dashboard
 
 ## Instant Setup
 
@@ -19,7 +19,7 @@ That's it! The dashboard automatically starts and streams live metrics.
 
 ## Features
 
-### 📊 Real-Time Visualization
+### Real-Time Visualization
 - **P&L tracking** with live profit/loss curves
 - **Market data** showing mid price and spread
 - **Hawkes intensity** buy/sell pressure visualization
@@ -27,13 +27,13 @@ That's it! The dashboard automatically starts and streams live metrics.
 - **Position & risk** exposure and limit usage
 - **Order flow** execution statistics
 
-### ⚡ Ultra-Low Latency
+### Ultra-Low Latency
 - **Lock-free metrics collection** (zero overhead)
 - **100ms update frequency** for smooth charts
 - **WebSocket streaming** for instant updates
 - **Atomic operations** no locks in hot path
 
-### 📈 Beautiful UI
+###  Beautiful UI
 - **Gradient glassmorphism** design
 - **Smooth animations** with Chart.js
 - **Responsive layout** works on mobile
