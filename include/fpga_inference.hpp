@@ -9,10 +9,10 @@
 
 namespace hft {
 
-// ============================================================================
+// ====
 // Cross-Asset Microstructure Features
 // Deep Order Flow Imbalance (OFI) and related features
-// ============================================================================
+// ====
 
 struct MicrostructureFeatures {
     // Deep OFI across multiple price levels
@@ -53,18 +53,18 @@ struct MicrostructureFeatures {
     }
 };
 
-// ============================================================================
+// ====
 // FPGA-Native DNN Inference Engine
 // Simulates deterministic hardware-accelerated neural network
 // Guarantees fixed 400ns latency (sub-microsecond decision)
-// ============================================================================
+// ====
 
 class FPGA_DNN_Inference {
 public:
-    // ========================================================================
+    // 
     // Constructor: Initialize with pre-trained weights (simplified)
     // In production, weights would be loaded from FPGA bitstream
-    // ========================================================================
+    // 
     explicit FPGA_DNN_Inference(size_t input_dim = 12, size_t hidden_dim = 8)
         : input_dim_(input_dim),
           hidden_dim_(hidden_dim),
@@ -84,10 +84,10 @@ public:
         for (auto& w : weights_o_) w = (std::rand() % 200 - 100) / 1000.0;
     }
     
-    // ========================================================================
+    // 
     // Predict: Deterministic inference with guaranteed 400ns latency
     // Returns [buy_score, hold_score, sell_score]
-    // ========================================================================
+    // 
     std::array<double, 3> predict(const MicrostructureFeatures& features) {
         const Timestamp start = now();
         
@@ -116,17 +116,17 @@ public:
         return output;
     }
     
-    // ========================================================================
+    // 
     // Get guaranteed latency (for system calibration)
-    // ========================================================================
+    // 
     int64_t get_fixed_latency_ns() const {
         return fixed_latency_ns_;
     }
     
-    // ========================================================================
+    // 
     // Feature extraction from market data
     // Computes Deep OFI and cross-asset features
-    // ========================================================================
+    // 
     static MicrostructureFeatures extract_features(
         const MarketTick& current_tick,
         const MarketTick& previous_tick,
@@ -177,10 +177,10 @@ public:
     }
     
 private:
-    // ========================================================================
+    // 
     // Compute Order Flow Imbalance (OFI) at specified depth
     // OFI = Σ(ΔBid_size - ΔAsk_size) weighted by price levels
-    // ========================================================================
+    // 
     static double compute_ofi(const MarketTick& current, 
                              const MarketTick& previous, 
                              size_t depth) {
@@ -204,10 +204,10 @@ private:
         return ofi;
     }
     
-    // ========================================================================
+    // 
     // Simplified forward pass (ReLU activation)
     // In real FPGA: this is Boolean logic in LUTs
-    // ========================================================================
+    // 
     std::array<double, 3> forward_pass(const std::vector<double>& input) const {
         // Hidden layer
         std::vector<double> hidden(hidden_dim_, 0.0);
@@ -241,9 +241,9 @@ private:
         return output;
     }
     
-    // ========================================================================
+    // 
     // Member variables
-    // ========================================================================
+    // 
     size_t input_dim_;
     size_t hidden_dim_;
     int64_t fixed_latency_ns_;  // Guaranteed 400ns latency
