@@ -1,4 +1,4 @@
-# 🚀 Monitoring Dashboard - Quick Start
+#  Monitoring Dashboard - Quick Start
 
 ## 3 Steps to Beautiful Real-Time Monitoring
 
@@ -23,10 +23,10 @@ cd "/Users/krishnabajpai/code/research codes/new-trading-system"
 **What you'll see:**
 ```
 === Ultra-Low-Latency HFT System ===
-[INIT] ✓ Kernel Bypass NIC
-[INIT] ✓ Shared Memory IPC
-[INIT] ✓ Timing Wheel Scheduler
-[INIT] ✓ Real-Time Dashboard Server (http://localhost:8080)
+[INIT] Kernel Bypass NIC
+[INIT] Shared Memory IPC
+[INIT] Timing Wheel Scheduler
+[INIT] Real-Time Dashboard Server (http://localhost:8080)
 Dashboard server started on port 8080
 Open http://localhost:8080 in your browser
 
@@ -41,11 +41,11 @@ http://localhost:8080
 ```
 
 **You'll see:**
-- ✅ 6 metric cards updating in real-time
-- ✅ 6 beautiful interactive charts
-- ✅ Live connection status
-- ✅ Scrolling activity log
-- ✅ All metrics streaming at 100ms intervals
+-  6 metric cards updating in real-time
+-  6 beautiful interactive charts
+-  Live connection status
+-  Scrolling activity log
+-  All metrics streaming at 100ms intervals
 
 ---
 
@@ -83,12 +83,12 @@ http://localhost:8080
 
 The dashboard is **pre-configured** and **ready to use**:
 
-- ✅ Port 8080 (configurable if needed)
-- ✅ 100ms update frequency (smooth charts)
-- ✅ 10,000 data point history
-- ✅ Auto-reconnect on disconnect
-- ✅ Multi-viewer support
-- ✅ Mobile responsive design
+-  Port 8080 (configurable if needed)
+-  100ms update frequency (smooth charts)
+-  10,000 data point history
+-  Auto-reconnect on disconnect
+-  Multi-viewer support
+-  Mobile responsive design
 
 ---
 
@@ -258,11 +258,11 @@ Docs:
 
 ## Summary
 
-✅ **Built:** Dashboard integrated into HFT system  
-✅ **Zero config:** Works out of the box  
-✅ **Beautiful:** Modern glassmorphism design  
-✅ **Fast:** 100ms updates, 60 FPS rendering  
-✅ **Production-ready:** Used for real trading  
+ **Built:** Dashboard integrated into HFT system  
+ **Zero config:** Works out of the box  
+ **Beautiful:** Modern glassmorphism design  
+ **Fast:** 100ms updates, 60 FPS rendering  
+ **Production-ready:** Used for real trading  
 
 **Just 3 commands away from live monitoring:**
 
@@ -272,4 +272,4 @@ Docs:
 # Open http://localhost:8080
 ```
 
-**That's it! Happy monitoring! 📊🚀**
+**That's it! Happy monitoring!**
