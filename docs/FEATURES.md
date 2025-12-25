@@ -1,6 +1,6 @@
 # Modern HFT System Features Checklist
 
-## ✅ Implemented Features
+##  Implemented Features
 
 ### Core Language Mix
 - [x] **C++ (90%)** - Performance-critical trading logic
@@ -141,7 +141,7 @@
   - All pages resident in RAM
   - No page faults
 
-## 📊 Performance Characteristics
+## Performance Characteristics
 
 ### Latency Profile
 ```
@@ -157,7 +157,7 @@ Risk Check (atomic)      | <30 ns   | ~12 ns
 Shared Memory Write      | <30 ns   | ~28 ns
 Event Schedule           | <50 ns   | ~35 ns (O(1))
 --------------------------|----------|----------------
-TOTAL CYCLE              | <1000 ns | ~850 ns ✓
+TOTAL CYCLE              | <1000 ns | ~850 ns 
 ```
 
 ### Throughput
@@ -177,7 +177,7 @@ Shared Memory            : ~4 MB (configurable)
 Total RSS                : ~50 MB (fully locked)
 ```
 
-## 🛠️ Development Tools & Flags
+##  Development Tools & Flags
 
 ### Compiler Optimizations
 ```bash
@@ -218,7 +218,7 @@ cpupower frequency-set -g performance
 echo off > /sys/devices/system/cpu/smt/control
 ```
 
-## 📚 Key Design Patterns
+##  Key Design Patterns
 
 ### 1. Zero-Copy Everywhere
 - Ring buffers hand off pointers, not data
@@ -245,7 +245,7 @@ echo off > /sys/devices/system/cpu/smt/control
 - Fixed-latency stages
 - No system calls in hot path
 
-## 🔬 Testing & Validation
+##  Testing & Validation
 
 ### Unit Tests
 - C++: Google Test framework
@@ -270,7 +270,7 @@ valgrind --tool=cachegrind          # Cache analysis
 - **CMakeLists.txt**: Build configuration
 - **Cargo.toml**: Rust build configuration
 
-## 🚀 Next Steps for Production
+##  Next Steps for Production
 
 ### Short Term
 - [ ] Integrate real DPDK (not simulation)
@@ -295,7 +295,7 @@ valgrind --tool=cachegrind          # Cache analysis
 
 ---
 
-**Status: ✅ All Modern HFT Features Implemented**
+**Status:  All Modern HFT Features Implemented**
 
 This system demonstrates state-of-the-art HFT architecture with:
 - C++/Rust hybrid for speed + safety
