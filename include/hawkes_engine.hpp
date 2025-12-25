@@ -81,26 +81,21 @@ public:
     double buy_intensity() const { return lambda_b; }
     double sell_intensity() const { return lambda_s; }
     
-    // ========================================================================
     // Get current intensity for sell orders
-    // ========================================================================
     double get_sell_intensity() const {
         return intensity_sell_;
     }
     
-    // ========================================================================
     // Get intensity imbalance (directional signal)
-    // Positive = more buy pressure, Negative = more sell pressure
-    // ========================================================================
     double get_intensity_imbalance() const {
         const double total = intensity_buy_ + intensity_sell_;
         if (total < 1e-10) return 0.0;
         return (intensity_buy_ - intensity_sell_) / total;
     }
     
-    // ========================================================================
+    // 
     // Predict intensity at future time (for latency compensation)
-    // ========================================================================
+    // 
     double predict_buy_intensity(Duration forecast_horizon) const {
         Timestamp future_time = current_time_ + forecast_horizon;
         return compute_intensity(Side::BUY, future_time);
@@ -111,9 +106,9 @@ public:
         return compute_intensity(Side::SELL, future_time);
     }
     
-    // ========================================================================
+    // 
     // Reset the engine (clear history)
-    // ========================================================================
+    // 
     void reset() {
         buy_events_.clear();
         sell_events_.clear();
@@ -122,33 +117,33 @@ public:
         current_time_ = now();
     }
     
-    // ========================================================================
+    // 
     // Get event counts for diagnostics
-    // ========================================================================
+    // 
     size_t get_buy_event_count() const { return buy_events_.size(); }
     size_t get_sell_event_count() const { return sell_events_.size(); }
     
 private:
-    // ========================================================================
+    // 
     // Power-Law Kernel: K(τ) = (β + τ)^(-γ)
-    // ========================================================================
+    // 
     double power_law_kernel(double tau_seconds) const {
         if (tau_seconds < 0.0) return 0.0;
         return std::pow(beta_ + tau_seconds, -gamma_);
     }
     
-    // ========================================================================
+    // 
     // Recalculate intensity based on current event history
     // λ_i(t) = μ_i + Σ_j Σ_{t_k < t} α_ij * K(t - t_k)
-    // ========================================================================
+    // 
     void recalculate_intensity() {
         intensity_buy_ = compute_intensity(Side::BUY, current_time_);
         intensity_sell_ = compute_intensity(Side::SELL, current_time_);
     }
     
-    // ========================================================================
+    // 
     // Compute intensity for a given side at specified time
-    // ========================================================================
+    // 
     double compute_intensity(Side side, Timestamp eval_time) const {
         double intensity = (side == Side::BUY) ? mu_buy_ : mu_sell_;
         
@@ -177,9 +172,9 @@ private:
         return std::max(intensity, 1e-10);  // Prevent negative/zero intensity
     }
     
-    // ========================================================================
+    // 
     // Member variables
-    // ========================================================================
+    // 
     double mu_buy_;          // Baseline intensity for buy events
     double mu_sell_;         // Baseline intensity for sell events
     double alpha_self_;      // Self-excitation coefficient
