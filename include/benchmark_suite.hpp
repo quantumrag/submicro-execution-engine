@@ -14,9 +14,9 @@
 namespace hft {
 namespace benchmark {
 
-// ============================================================================
+// ====
 // High-Precision Timestamp using TSC (Time Stamp Counter)
-// ============================================================================
+// ====
 
 /**
  * Get CPU cycle count (sub-nanosecond precision)
@@ -76,9 +76,9 @@ inline double tsc_to_ns(uint64_t cycles) {
     return cycles * g_tsc_to_ns;
 }
 
-// ============================================================================
+// ====
 // Component-Level Timing
-// ============================================================================
+// ====
 
 /**
  * Breakdown of latency by component
@@ -102,9 +102,9 @@ struct ComponentTiming {
     }
 };
 
-// ============================================================================
+// ====
 // Latency Statistics Calculator
-// ============================================================================
+// ====
 
 struct LatencyStats {
     double min_ns;
@@ -251,9 +251,9 @@ private:
     }
 };
 
-// ============================================================================
+// ====
 // Synthetic Market Data Generator
-// ============================================================================
+// ====
 
 class MarketDataGenerator {
 public:
@@ -314,9 +314,9 @@ public:
     }
 };
 
-// ============================================================================
+// ====
 // Component-Level Benchmark
-// ============================================================================
+// ====
 
 class ComponentBenchmark {
 public:
@@ -356,9 +356,9 @@ public:
     }
 };
 
-// ============================================================================
+// ====
 // Full System Benchmark (Tick-to-Trade)
-// ============================================================================
+// ====
 
 class TickToTradeBenchmark {
 public:
@@ -557,7 +557,7 @@ private:
               << "," << stats.max_ns << "," << pct << "\n";
         }
         
-        std::cout << "\n✅ Results exported to:\n";
+        std::cout << "\n Results exported to:\n";
         std::cout << "   - " << output_prefix << "_total.csv\n";
         std::cout << "   - " << output_prefix << "_components.csv\n\n";
         
