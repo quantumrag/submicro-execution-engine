@@ -23,7 +23,7 @@
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen?style=for-the-badge)](.)
 [![C++17](https://img.shields.io/badge/C%2B%2B-17-blue?style=for-the-badge&logo=cplusplus)](.)
 [![Rust](https://img.shields.io/badge/Rust-1.70%2B-orange?style=for-the-badge&logo=rust)](.)
-[![License](https://img.shields.io/badge/license-MIT-green?style=for-the-badge)](LICENSE)
+[![License](https://img.shields.io/badge/license-Proprietary-red?style=for-the-badge)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=for-the-badge)](.)
 
 <p>
@@ -64,6 +64,8 @@ A **transparent, deterministic execution engine** that:
 - ✅ Implements **institutional-grade logging** and monitoring
 
 ⚠️ **Research & Education Only** — Not production-ready. No exchange connectivity included.
+
+🚨 **PROPRIETARY LICENSE** — Commercial use prohibited. Written permission required. Contact: krishna@krishnabajpai.me
 
 ## 📊 Performance Snapshot
 
@@ -431,8 +433,14 @@ This system **IS**:
 
 ## 📝 License
 
-MIT License - See [LICENSE](LICENSE) file for details
+**PROPRIETARY LICENSE** - See [LICENSE](LICENSE) file for details
 
-Copyright (c) 2025 Krishna Bajpai
+**IMPORTANT:** This software is for academic research and educational purposes only. 
+Commercial use is strictly prohibited. Written permission required for any use beyond 
+personal learning and non-commercial experimentation.
+
+**To request permission:** Contact krishna@krishnabajpai.me
+
+Copyright (c) 2025 Krishna Bajpai - All Rights Reserved
 
 ---
