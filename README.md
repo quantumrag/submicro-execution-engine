@@ -400,7 +400,7 @@ This system **IS**:
 
 [![GitHub Issues](https://img.shields.io/badge/Issues-Open-blue?style=for-the-badge&logo=github)](https://github.com/krish567366/submicro-execution-engine/issues)
 [![Discussions](https://img.shields.io/badge/Discussions-Join-green?style=for-the-badge&logo=github)](https://github.com/krish567366/submicro-execution-engine/discussions)
-[![Email](https://img.shields.io/badge/Email-Contact-red?style=for-the-badge&logo=gmail)](mailto:your-email@example.com)
+[![Email](https://img.shields.io/badge/Email-Contact-red?style=for-the-badge&logo=gmail)](mailto:krishna@krishnabajpai.me)
 
 </div>
 
@@ -433,6 +433,6 @@ This system **IS**:
 
 MIT License - See [LICENSE](LICENSE) file for details
 
-Copyright (c) 2025 [Your Name]
+Copyright (c) 2025 Krishna Bajpai
 
 ---
