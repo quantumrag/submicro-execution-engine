@@ -21,14 +21,14 @@ print("=" * 70)
 print()
 
 # Basic stats
-print(f"📊 Dataset Statistics:")
+print(f"Dataset Statistics:")
 print(f"   Total Ticks Processed:  {len(df):,}")
 print(f"   Time Period:            {(df['timestamp'].iloc[-1] - df['timestamp'].iloc[0]) / 1e6:.2f} seconds")
 print(f"   Tick Rate:              {len(df) / ((df['timestamp'].iloc[-1] - df['timestamp'].iloc[0]) / 1e6):.0f} ticks/second")
 print()
 
 # Price statistics
-print(f"💰 Market Data:")
+print(f"Market Data:")
 print(f"   Average Mid Price:      ${df['mid_price'].mean():.2f}")
 print(f"   Price Range:            ${df['mid_price'].min():.2f} - ${df['mid_price'].max():.2f}")
 print(f"   Price Volatility:       {df['mid_price'].std():.4f} ({df['mid_price'].std() / df['mid_price'].mean() * 100:.2f}%)")
@@ -40,7 +40,7 @@ total_trades = df['trades'].sum()
 total_fills = df['fills'].sum()
 total_pnl = df['realized_pnl'].iloc[-1] - df['realized_pnl'].iloc[0]
 
-print(f"📈 Trading Performance:")
+print(f"Trading Performance:")
 print(f"   Total Trades:           {int(total_trades)}")
 print(f"   Total Fills:            {int(total_fills)}")
 print(f"   Final Position:         {int(df['position'].iloc[-1])}")
@@ -48,7 +48,7 @@ print(f"   Realized P&L:           ${total_pnl:.2f}")
 print()
 
 # Latency statistics
-print(f"⚡ System Performance:")
+print(f"System Performance:")
 print(f"   Average Latency:        {df['latency_us'].mean():.2f} μs")
 print(f"   Min Latency:            {df['latency_us'].min():.2f} μs")
 print(f"   Max Latency:            {df['latency_us'].max():.2f} μs")
@@ -57,7 +57,7 @@ print(f"   p99 Latency:            {df['latency_us'].quantile(0.99):.2f} μs")
 print()
 
 # Hawkes intensity analysis
-print(f"📊 Order Flow Analysis (Hawkes Process):")
+print(f"Order Flow Analysis (Hawkes Process):")
 print(f"   Avg Buy Intensity:      {df['hawkes_buy'].mean():.1f}")
 print(f"   Avg Sell Intensity:     {df['hawkes_sell'].mean():.1f}")
 df['hawkes_imbalance'] = (df['hawkes_buy'] - df['hawkes_sell']) / (df['hawkes_buy'] + df['hawkes_sell'])
@@ -66,7 +66,7 @@ print()
 
 # Regime analysis
 regime_counts = df['regime'].value_counts()
-print(f"🛡️  Risk Regime Distribution:")
+print(f"Risk Regime Distribution:")
 for regime, count in regime_counts.items():
     regime_name = ['NORMAL', 'ELEVATED', 'STRESSED', 'HALTED'][int(regime)]
     pct = count / len(df) * 100
@@ -75,7 +75,7 @@ print()
 
 # SIMULATE potential profit (if trading was enabled)
 print("=" * 70)
-print("  💡 POTENTIAL PROFIT SIMULATION (If Trading Enabled)")
+print("   POTENTIAL PROFIT SIMULATION (If Trading Enabled)")
 print("=" * 70)
 print()
 
@@ -92,7 +92,7 @@ trading_opportunities = len(strong_signal)
 estimated_trades = int(trading_opportunities * 0.7)
 estimated_profit = estimated_trades * profit_per_trade
 
-print(f"📊 Market Making Simulation:")
+print(f"Market Making Simulation:")
 print(f"   Average Spread:              ${avg_spread_dollars:.4f} per trade")
 print(f"   Half-Spread Capture:         ${profit_per_trade:.4f} per fill")
 print(f"   Strong Signal Opportunities: {trading_opportunities:,}")
@@ -106,7 +106,7 @@ if time_seconds > 0:
     profit_per_second = estimated_profit / time_seconds
     profit_per_day = profit_per_second * 86400
     
-    print(f"💰 Projected Returns:")
+    print(f"Projected Returns:")
     print(f"   Profit Rate:                 ${profit_per_second:.2f}/second")
     print(f"   Daily Projection:            ${profit_per_day:,.2f}/day")
     print(f"   Monthly Projection:          ${profit_per_day * 30:,.2f}/month")
@@ -114,7 +114,7 @@ if time_seconds > 0:
     print()
 
 # Risk metrics
-print(f"⚠️  Risk Analysis:")
+print(f"  Risk Analysis:")
 print(f"   Price Volatility (daily):    {df['mid_price'].std() * np.sqrt(252):.2f}%")
 print(f"   Max Hawkes Imbalance:        {df['hawkes_imbalance'].abs().max():.3f}")
 print(f"   System is in HALTED mode:    {(df['regime'] == 3).sum() / len(df) * 100:.1f}% of time")
