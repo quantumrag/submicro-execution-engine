@@ -147,7 +147,7 @@ class InstitutionalDataGenerator:
                 f.write(f"{row['timestamp_ns']},{row['event_type']},{row['side']},"
                        f"{row['price']:.4f},{row['size']},{row['order_id']},{row['level']}\n")
         
-        print(f"✓ Saved {len(self.market_data):,} events to {filename}")
+        print(f"Saved {len(self.market_data):,} events to {filename}")
         
         # Calculate SHA256 checksum
         sha256_hash = hashlib.sha256()
@@ -156,7 +156,7 @@ class InstitutionalDataGenerator:
                 sha256_hash.update(byte_block)
         
         checksum = sha256_hash.hexdigest()
-        print(f"✓ SHA256 Checksum: {checksum}")
+        print(f"SHA256 Checksum: {checksum}")
         
         # Save metadata
         metadata = {
@@ -174,7 +174,7 @@ class InstitutionalDataGenerator:
         with open('market_data_metadata.json', 'w') as f:
             json.dump(metadata, f, indent=2)
         
-        print(f"✓ Metadata saved to market_data_metadata.json")
+        print(f"Metadata saved to market_data_metadata.json")
         print()
         
         return checksum
@@ -241,11 +241,11 @@ class InstitutionalDataGenerator:
         # Verification checks
         print("Verification Checks:")
         checks = [
-            ("✓" if len(df) >= 90000 else "✗", f"Event count: {len(df):,} >= 90,000"),
-            ("✓" if duration_ns/1e9 >= 9.0 else "✗", f"Duration: {duration_ns/1e9:.3f}s >= 9.0s"),
-            ("✓" if len(self.alpha_bursts) >= 10 else "✗", f"Alpha bursts: {len(self.alpha_bursts)} >= 10"),
-            ("✓" if abs(df[df['side']=='B'].shape[0] - df[df['side']=='S'].shape[0]) / len(df) < 0.05 else "✗", "Side balance within 5%"),
-            ("✓" if prices.std() < 0.2 else "✗", f"Price volatility: σ={prices.std():.4f} < 0.2"),
+            ("PASS" if len(df) >= 90000 else "FAIL", f"Event count: {len(df):,} >= 90,000"),
+            ("PASS" if duration_ns/1e9 >= 9.0 else "FAIL", f"Duration: {duration_ns/1e9:.3f}s >= 9.0s"),
+            ("PASS" if len(self.alpha_bursts) >= 10 else "FAIL", f"Alpha bursts: {len(self.alpha_bursts)} >= 10"),
+            ("PASS" if abs(df[df['side']=='B'].shape[0] - df[df['side']=='S'].shape[0]) / len(df) < 0.05 else "FAIL", "Side balance within 5%"),
+            ("PASS" if prices.std() < 0.2 else "FAIL", f"Price volatility: σ={prices.std():.4f} < 0.2"),
         ]
         
         for symbol, check in checks:
