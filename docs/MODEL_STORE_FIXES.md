@@ -64,7 +64,7 @@ If you want to clear the IntelliSense warnings:
 
 ## Status
 
-✅ **All compilation errors fixed**  
-✅ **File compiles successfully with g++**  
-⚠️ **IntelliSense may show stale warnings (safe to ignore)**
+ **All compilation errors fixed**  
+ **File compiles successfully with g++**  
+ **IntelliSense may show stale warnings (safe to ignore)**
 
