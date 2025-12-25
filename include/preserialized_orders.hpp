@@ -9,13 +9,6 @@
 namespace hft {
 namespace preserialized {
 
-// ============================================================================
-// Pre-Serialized Order Templates
-// Pre-build unchanging parts of binary protocol at initialization
-// At runtime, only patch dynamic fields (price, size, order_id)
-// Target: Reduce serialization from 100ns to 20ns
-// ============================================================================
-
 #pragma pack(push, 1)
 
 // Binary order message header (FIX/SBE-like)
@@ -53,9 +46,7 @@ struct BinaryCancelOrderMessage {
 
 #pragma pack(pop)
 
-// ============================================================================
 // Order Template: Pre-serialized buffer with patch points
-// ============================================================================
 class OrderTemplate {
 public:
     OrderTemplate() : buffer_size_(0) {
@@ -123,9 +114,7 @@ private:
     size_t buffer_size_;
 };
 
-// ============================================================================
 // Template Pool: Per-symbol, per-order-type templates
-// ============================================================================
 class OrderTemplatePool {
 public:
     OrderTemplatePool(uint32_t client_id, uint32_t session_id)
@@ -215,10 +204,9 @@ private:
     std::unordered_map<uint32_t, OrderTemplate> limit_fok_templates_;
 };
 
-// ============================================================================
+// ====
 // Optimized Order Submission Path
 // Combines template patching with lock-free queue insertion
-// ============================================================================
 class FastOrderSubmitter {
 public:
     FastOrderSubmitter(uint32_t client_id, uint32_t session_id)
