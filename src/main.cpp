@@ -10,6 +10,7 @@
 #include "rust_ffi.hpp"
 #include "metrics_collector.hpp"
 #include "websocket_server.hpp"
+#include "spin_loop_engine.hpp"
 
 #include <iostream>
 #include <iomanip>
@@ -22,9 +23,9 @@
 
 using namespace hft;
 
-std::atomic<bool> shutdown_requested{false};
+std::atomic<bool> g_shutdown_requested{false};
 
-void sigint_handler(int sig) {
+void signal_handler(int sig) {
     if (sig == SIGINT || sig == SIGTERM) {
         g_shutdown_requested.store(true, std::memory_order_release);
         std::cout << "\nShutdown requested..." << std::endl;
@@ -83,51 +84,61 @@ struct TradingState {
 class VolatilityEstimator {
 public:
     explicit VolatilityEstimator(size_t window_size = 100)
-        : window_size_(window_size) {}
+        : window_size_(window_size), head_(0), count_(0),
+          sum_ret_(0.0), sum_sq_ret_(0.0), last_price_(0.0) {
+        returns_.fill(0.0);
+    }
     
     void update(double price) {
-        if (prices_.size() >= window_size_) {
-            prices_.erase(prices_.begin());
+        if (price <= 0) return;
+        
+        if (last_price_ > 0) {
+            const double ret = hft::spin_loop::fast_ln(price / last_price_);
+            
+            // If window is full, subtract outgoing return
+            if (count_ >= window_size_) {
+                const double old_ret = returns_[head_];
+                sum_ret_ -= old_ret;
+                sum_sq_ret_ -= old_ret * old_ret;
+            } else {
+                count_++;
+            }
+            
+            // Add new return
+            returns_[head_] = ret;
+            sum_ret_ += ret;
+            sum_sq_ret_ += ret * ret;
+            
+            head_ = (head_ + 1) % 1024;
         }
-        prices_.push_back(price);
+        
+        last_price_ = price;
     }
     
     double get_realized_volatility() const {
-        if (prices_.size() < 2) return 0.0;
+        if (count_ < 2) return 0.0;
         
-        std::vector<double> returns;
-        for (size_t i = 1; i < prices_.size(); ++i) {
-            if (prices_[i-1] > 0) {
-                returns.push_back(std::log(prices_[i] / prices_[i-1]));
-            }
-        }
+        const double n = static_cast<double>(count_);
+        const double mean = sum_ret_ / n;
+        double variance = (sum_sq_ret_ / n) - (mean * mean);
+        if (variance < 0) variance = 0;
         
-        if (returns.empty()) return 0.0;
-        
-        double mean = 0.0;
-        for (double r : returns) mean += r;
-        mean /= returns.size();
-        
-        double variance = 0.0;
-        for (double r : returns) {
-            variance += (r - mean) * (r - mean);
-        }
-        variance /= returns.size();
-        
-        // Annualize (assuming 1 second intervals, 252 trading days)
-        return std::sqrt(variance * 252.0 * 6.5 * 3600.0);
+        // Annualize
+        return hft::spin_loop::fast_sqrt(variance * 5896800.0);
     }
     
-    // Normalized volatility index (0.0 = calm, 1.0+ = stressed)
     double get_volatility_index() const {
-        const double vol = get_realized_volatility();
-        const double normal_vol = 0.20;  // 20% annualized as "normal"
-        return vol / normal_vol;
+        return get_realized_volatility() * 5.0; // / 0.20
     }
     
 private:
     size_t window_size_;
-    std::vector<double> prices_;
+    size_t head_;
+    size_t count_;
+    double sum_ret_;
+    double sum_sq_ret_;
+    double last_price_;
+    std::array<double, 1024> returns_;
 };
 
 // System Initialization: Configure for ultra-low latency
@@ -200,7 +211,7 @@ int main() {
     std::cout << "[INIT] Hawkes Intensity Engine initialized" << std::endl;
     
     // 3. FPGA Inference Engine (compute layer)
-    FPGA_DNN_Inference fpga_inference(12, 8);
+    FPGA_DNN_Inference fpga_inference;
     std::cout << "[INIT] FPGA DNN Inference (fixed " 
               << fpga_inference.get_fixed_latency_ns() 
               << "ns latency)" << std::endl;
@@ -281,9 +292,12 @@ int main() {
         }
         
         if (!has_data) {
-            // No data available, yield CPU briefly
-            // In production: would use busy-wait or hardware polling
-            std::this_thread::yield();
+            // BUSY-WAIT instead of yield for sub-microsecond response
+            #if defined(__x86_64__)
+                _mm_pause();
+            #elif defined(__aarch64__)
+                __asm__ __volatile__("yield");
+            #endif
             continue;
         }
         
@@ -366,27 +380,6 @@ int main() {
                 ask_order, state.current_position);
             
             // Order submission (in production: send to exchange)
-            // Minimum latency floor enforcement (550ns)
-            // This prevents catastrophic loss from toxic flow adverse selection.
-            // We enforce a 550ns floor (50ns safety buffer above 500ns threshold)
-            // to avoid the "speed trap" where faster execution leads to trading
-            // on toxic microstructure noise (<100ns half-life) instead of 
-            // persistent alpha signals (1-5ms half-life).
-            // 
-            // Mechanism: If cycle latency < 550ns, enforce busy-wait delay
-            // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-            const int64_t MINIMUM_LATENCY_FLOOR_NS = 550;
-            const int64_t current_cycle_latency = to_nanos(now()) - to_nanos(cycle_start);
-            
-            if (current_cycle_latency < MINIMUM_LATENCY_FLOOR_NS) {
-                // BUSY-WAIT ENFORCEMENT: Force minimum latency delay
-                // This uses CPU isolation + spin-loop for deterministic timing
-                const int64_t target_time = to_nanos(cycle_start) + MINIMUM_LATENCY_FLOOR_NS;
-                while (to_nanos(now()) < target_time) {
-                    // Hardware busy-wait (prevents context switch)
-                    __asm__ __volatile__("" ::: "memory");  // Prevent optimization
-                }
-            }
             
             if (bid_approved && mm_strategy.should_quote(quotes.spread, latency_cost)) {
                 // Submit bid order
@@ -403,43 +396,40 @@ int main() {
             }
         }
         
-        // 
-        // Step 10: Measure cycle latency & Update metrics (deterministic profiling)
-        // 
+        // Measure cycle latency
         const Timestamp cycle_end = now();
         const int64_t cycle_latency_ns = to_nanos(cycle_end) - to_nanos(cycle_start);
-        metrics.update(cycle_latency_ns);
-        
-        // Update metrics collector for dashboard
-        const double cycle_latency_us = cycle_latency_ns / 1000.0;
-        metrics_collector.update_cycle_latency(cycle_latency_us);
-        metrics_collector.update_market_data(
-            tick.mid_price,
-            tick.bid_prices[0],
-            tick.ask_prices[0]
-        );
-        metrics_collector.update_position(
-            state.current_position,
-            0.0,  // unrealized P&L (calculate if needed)
-            0.0   // realized P&L (calculate if needed)
-        );
-        metrics_collector.update_hawkes_intensity(
-            hawkes_buy_intensity,
-            hawkes_sell_intensity
-        );
-        
-        // Update risk metrics
-        risk_control.set_regime_multiplier(vol_index);
-        const int regime = static_cast<int>(risk_control.get_current_regime());
-        const double position_usage = std::abs(state.current_position) / 1000.0 * 100.0;
-        metrics_collector.update_risk(
-            regime,
-            risk_control.get_regime_multiplier(),
-            position_usage
-        );
-        
-        // Take snapshot every 100 cycles for time-series
+
+        // Throttled metrics collection (every 100 cycles) to reduce hot-path latency
         if (cycle_count % 100 == 0) {
+            metrics.update(cycle_latency_ns);
+            
+            const double cycle_latency_us = cycle_latency_ns / 1000.0;
+            metrics_collector.update_cycle_latency(cycle_latency_us);
+            metrics_collector.update_market_data(
+                tick.mid_price,
+                tick.bid_prices[0],
+                tick.ask_prices[0]
+            );
+            metrics_collector.update_position(
+                state.current_position,
+                0.0,
+                0.0
+            );
+            metrics_collector.update_hawkes_intensity(
+                hawkes_buy_intensity,
+                hawkes_sell_intensity
+            );
+            
+            risk_control.set_regime_multiplier(vol_index);
+            const int regime = static_cast<int>(risk_control.get_current_regime());
+            const double position_usage = std::abs(state.current_position) / 1000.0 * 100.0;
+            metrics_collector.update_risk(
+                regime,
+                risk_control.get_regime_multiplier(),
+                position_usage
+            );
+            
             metrics_collector.take_snapshot();
         }
         
