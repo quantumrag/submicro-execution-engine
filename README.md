@@ -335,13 +335,17 @@ Open an issue with:
 
 ---
 
-## Hardware Validation & Future Work
+This repository is open for research and evaluation.
 
-Full validation of kernel-bypass networking and FPGA-based inference requires access to specific NIC and FPGA hardware (e.g., DPDK-enabled NICs, FPGA accelerator cards).
+Hardware-specific integrations (kernel-bypass NICs, FPGA inference pipelines), production hardening, and vendor-specific optimizations are not bundled due to hardware dependency, but are available commercially.
 
-The current repository focuses on architecture, interfaces, and software-level integration. Hardware-backed benchmarking and production-grade bitstreams are planned future work and would require dedicated hardware access and funding.
+If you are interested in:
+- NIC-specific kernel-bypass implementations
+- FPGA-based inference pipelines
+- Latency benchmarking and tuning
+- Architecture reviews for low-latency systems
 
-**Hardware-specific NIC and FPGA integrations are available commercially. If you are interested in sponsoring hardware validation or collaborating on vendor-specific implementations, feel free to reach out.**
+Please reach out for collaboration or commercial support.
 
 ### Kernel-bypass NICs
 
