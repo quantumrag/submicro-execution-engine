@@ -268,20 +268,18 @@ order_flow.log: OK
 latency_metrics.log: OK
 ```
 
-**TSC-level reproducibility proof:** See `logs/strategy_trace.log`
-
 ---
 
 ## Complete Documentation
 
 | Document | Description |
 |----------|-------------|
-| [`ARCHITECTURE.md`](ARCHITECTURE.md) | Order path, cache layout, thread model |
-| [`BENCHMARK_GUIDE.md`](BENCHMARK_GUIDE.md) | Latency measurement methodology |
-| [`LATENCY_BUDGET.md`](LATENCY_BUDGET.md) | Component-level breakdown |
-| [`INSTITUTIONAL_LOGGING_COMPARISON.md`](INSTITUTIONAL_LOGGING_COMPARISON.md) | Audit-grade logging |
-| [`PRODUCTION_READINESS.md`](PRODUCTION_READINESS.md) | Deployment considerations |
-| `logs/README.md` | Multi-layer timestamp verification |
+| [`ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Order path, cache layout, thread model |
+| [`BENCHMARK_GUIDE.md`](docs/BENCHMARK_GUIDE.md) | Latency measurement methodology |
+| [`LATENCY_BUDGET.md`](docs/LATENCY_BUDGET.md) | Component-level breakdown |
+| [`INSTITUTIONAL_LOGGING_COMPARISON.md`](docs/INSTITUTIONAL_LOGGING_COMPARISON.md) | Audit-grade logging |
+| [`PRODUCTION_READINESS.md`](docs/PRODUCTION_READINESS.md) | Deployment considerations |
+| [`logs/README.md`](logs/README.md) | Multi-layer timestamp verification |
 
 ---
 
