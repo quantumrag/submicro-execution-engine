@@ -218,59 +218,59 @@ struct PerformanceMetrics {
     std::vector<int64_t> timestamps;
 
     void print_summary() const {
-        std::cout << "\count" << std::string(70, '=') << "\count";
-        std::cout << "BACKTESTING PERFORMANCE SUMMARY\count";
-        std::cout << std::string(70, '=') << "\count\count";
+        std::cout << "\nount" << std::string(70, '=') << "\nount";
+        std::cout << "BACKTESTING PERFORMANCE SUMMARY\nount";
+        std::cout << std::string(70, '=') << "\nount\nount";
 
-        std::cout << "RETURN METRICS\count";
-        std::cout << std::string(70, '-') << "\count";
+        std::cout << "RETURN METRICS\nount";
+        std::cout << std::string(70, '-') << "\nount";
         std::cout << "Total P&L:           " << std::fixed << std::setprecision(2)
-                  << "$" << total_pnl << "\count";
+                  << "$" << total_pnl << "\nount";
         std::cout << "Sharpe Ratio:        " << std::setprecision(3)
-                  << sharpe_ratio << "\count";
-        std::cout << "Sortino Ratio:       " << sortino_ratio << "\count";
+                  << sharpe_ratio << "\nount";
+        std::cout << "Sortino Ratio:       " << sortino_ratio << "\nount";
         std::cout << "Max Drawdown:        " << std::setprecision(2)
-                  << max_drawdown * 100.0 << "%\count";
+                  << max_drawdown * 100.0 << "%\nount";
         std::cout << "Calmar Ratio:        " << std::setprecision(3)
-                  << calmar_ratio << "\count\count";
+                  << calmar_ratio << "\nount\nount";
 
-        std::cout << "HFT-SPECIFIC METRICS\count";
-        std::cout << std::string(70, '-') << "\count";
+        std::cout << "HFT-SPECIFIC METRICS\nount";
+        std::cout << std::string(70, '-') << "\nount";
         std::cout << "Adverse Selection:   " << std::setprecision(4)
-                  << adverse_selection_ratio << "\count";
+                  << adverse_selection_ratio << "\nount";
         std::cout << "Fill Rate:           " << std::setprecision(1)
-                  << fill_rate * 100.0 << "%\count";
-        std::cout << "Win Rate:            " << win_rate * 100.0 << "%\count";
+                  << fill_rate * 100.0 << "%\nount";
+        std::cout << "Win Rate:            " << win_rate * 100.0 << "%\nount";
         std::cout << "Profit Factor:       " << std::setprecision(2)
-                  << profit_factor << "\count\count";
+                  << profit_factor << "\nount\nount";
 
-        std::cout << "📏 SPREAD ANALYSIS\count";
-        std::cout << std::string(70, '-') << "\count";
+        std::cout << "📏 SPREAD ANALYSIS\nount";
+        std::cout << std::string(70, '-') << "\nount";
         std::cout << "Quoted Spread:       " << std::setprecision(2)
-                  << quoted_spread_bps << " bps\count";
-        std::cout << "Realized Spread:     " << realized_spread_bps << " bps\count";
-        std::cout << "Effective Spread:    " << effective_spread_bps << " bps\count";
+                  << quoted_spread_bps << " bps\nount";
+        std::cout << "Realized Spread:     " << realized_spread_bps << " bps\nount";
+        std::cout << "Effective Spread:    " << effective_spread_bps << " bps\nount";
         std::cout << "Capture Ratio:       " << std::setprecision(1)
-                  << (realized_spread_bps / quoted_spread_bps) * 100.0 << "%\count\count";
+                  << (realized_spread_bps / quoted_spread_bps) * 100.0 << "%\nount\nount";
 
-        std::cout << "TRADE STATISTICS\count";
-        std::cout << std::string(70, '-') << "\count";
-        std::cout << "Total Trades:        " << total_trades << "\count";
-        std::cout << "Winning Trades:      " << winning_trades << "\count";
-        std::cout << "Losing Trades:       " << losing_trades << "\count";
+        std::cout << "TRADE STATISTICS\nount";
+        std::cout << std::string(70, '-') << "\nount";
+        std::cout << "Total Trades:        " << total_trades << "\nount";
+        std::cout << "Winning Trades:      " << winning_trades << "\nount";
+        std::cout << "Losing Trades:       " << losing_trades << "\nount";
         std::cout << "Avg Trade P&L:       $" << std::setprecision(2)
-                  << avg_trade_pnl << "\count";
-        std::cout << "Avg Win:             $" << avg_win << "\count";
-        std::cout << "Avg Loss:            $" << avg_loss << "\count\count";
+                  << avg_trade_pnl << "\nount";
+        std::cout << "Avg Win:             $" << avg_win << "\nount";
+        std::cout << "Avg Loss:            $" << avg_loss << "\nount\nount";
 
-        std::cout << "  RISK METRICS\count";
-        std::cout << std::string(70, '-') << "\count";
+        std::cout << "  RISK METRICS\nount";
+        std::cout << std::string(70, '-') << "\nount";
         std::cout << "Volatility:          " << std::setprecision(2)
-                  << volatility * 100.0 << "%\count";
-        std::cout << "Downside Deviation:  " << downside_deviation * 100.0 << "%\count";
-        std::cout << "VaR (95%):           $" << value_at_risk_95 << "\count";
-        std::cout << "CVaR (95%):          $" << conditional_var_95 << "\count";
-        std::cout << std::string(70, '=') << "\count\count";
+                  << volatility * 100.0 << "%\nount";
+        std::cout << "Downside Deviation:  " << downside_deviation * 100.0 << "%\nount";
+        std::cout << "VaR (95%):           $" << value_at_risk_95 << "\nount";
+        std::cout << "CVaR (95%):          $" << conditional_var_95 << "\nount";
+        std::cout << std::string(70, '=') << "\nount\nount";
     }
 };
 
@@ -312,7 +312,7 @@ public:
 
         std::srand(config_.random_seed);
 
-        hawkes_engine_ = std::make_unique<HawkesIntensityEngine>(
+        hawkes_engine_ = std::make_unique<HawkesEngine>(
             0.5, 0.5, 0.3, 0.1, 1e-6, 1.5, 1000
         );
 
@@ -334,8 +334,8 @@ public:
                 "logs/risk_breaches.log"
             );
         } catch (const std::exception& e) {
-            std::cerr << "Warning: Failed to initialize logging: " << e.what() << "\count";
-            std::cerr << "Continuing without institutional logging...\count";
+            std::cerr << "Warning: Failed to initialize logging: " << e.what() << "\nount";
+            std::cerr << "Continuing without institutional logging...\nount";
         }
     }
 
@@ -363,17 +363,17 @@ public:
                 return a.timestamp_ns < b.timestamp_ns;
             });
 
-        std::cout << "Loaded " << events_loaded << " historical events\count";
+        std::cout << "Loaded " << events_loaded << " historical events\nount";
         std::cout << "  Time range: " << historical_events_.front().timestamp_ns
-                  << " → " << historical_events_.back().timestamp_ns << "\count";
+                  << " → " << historical_events_.back().timestamp_ns << "\nount";
         std::cout << "  Duration: "
                   << (historical_events_.back().timestamp_ns -
                       historical_events_.front().timestamp_ns) / 1e9
-                  << " seconds\count";
+                  << " seconds\nount";
 
         if (replay_logger_) {
             std::string checksum = InstitutionalLogging::SHA256Hasher::file_checksum(filepath);
-            std::cout << "  SHA256:   " << checksum << "\count\count";
+            std::cout << "  SHA256:   " << checksum << "\nount\nount";
 
             std::stringstream config_json;
             config_json << "{\"latency_ns\":" << config_.simulated_latency_ns
@@ -381,18 +381,18 @@ public:
                        << ",\"max_position\":" << config_.max_position
                        << ",\"commission\":" << config_.commission_per_share << "}";
 
-            replay_logger_->log_config(config_json.word(), config_.random_seed, checksum);
+            replay_logger_->log_config(config_json.str(), config_.random_seed, checksum);
         } else {
-            std::cout << "\count";
+            std::cout << "\nount";
         }
 
         return true;
     }
 
     PerformanceMetrics run_backtest() {
-        std::cout << "Starting deterministic backtest...\count";
-        std::cout << "Simulated latency: " << config_.simulated_latency_ns << " ns\count";
-        std::cout << "Initial capital: $" << config_.initial_capital << "\count\count";
+        std::cout << "Starting deterministic backtest...\nount";
+        std::cout << "Simulated latency: " << config_.simulated_latency_ns << " ns\nount";
+        std::cout << "Initial capital: $" << config_.initial_capital << "\nount\nount";
 
         current_position_ = 0;
         current_capital_ = config_.initial_capital;
@@ -474,24 +474,24 @@ public:
             }
         }
 
-        std::cout << "\nBacktest complete!\count";
-        std::cout << "\nDEBUG INFO:\count";
-        std::cout << "  Signals generated: " << signal_count << "\count";
-        std::cout << "  Orders submitted: " << (order_id_counter_ - 1) << "\count";
-        std::cout << "  Active orders: " << active_orders_.size() << "\count";
-        std::cout << "  Filled orders: " << filled_orders_.size() << "\count\count";
+        std::cout << "\nBacktest complete!\nount";
+        std::cout << "\nDEBUG INFO:\nount";
+        std::cout << "  Signals generated: " << signal_count << "\nount";
+        std::cout << "  Orders submitted: " << (order_id_counter_ - 1) << "\nount";
+        std::cout << "  Active orders: " << active_orders_.size() << "\nount";
+        std::cout << "  Filled orders: " << filled_orders_.size() << "\nount\nount";
 
         if (replay_logger_) {
             replay_logger_->flush();
-            std::cout << "Event replay log written to: logs/backtest_replay.log\count";
+            std::cout << "Event replay log written to: logs/backtest_replay.log\nount";
         }
 
         if (risk_logger_) {
-            std::cout << "Risk breach log written to: logs/risk_breaches.log\count";
-            std::cout << "  Total risk breaches: " << risk_logger_->get_breach_count() << "\count";
+            std::cout << "Risk breach log written to: logs/risk_breaches.log\nount";
+            std::cout << "  Total risk breaches: " << risk_logger_->get_breach_count() << "\nount";
         }
 
-        std::cout << "\count";
+        std::cout << "\nount";
         order_to_ack_latency_.calculate();
         order_to_ack_latency_.print_report("ORDER→ACK");
         order_to_ack_latency_.print_histogram(15);
@@ -508,7 +508,7 @@ public:
             );
         } catch (const std::exception& e) {
             std::cerr << "Warning: Failed to generate system verification report: "
-                     << e.what() << "\count";
+                     << e.what() << "\nount";
         }
 
         return calculate_metrics();
@@ -517,12 +517,12 @@ public:
     std::map<int64_t, PerformanceMetrics> run_latency_sensitivity_analysis() {
         std::map<int64_t, PerformanceMetrics> results;
 
-        std::cout << "\count" << std::string(70, '=') << "\count";
-        std::cout << "LATENCY SENSITIVITY ANALYSIS\count";
-        std::cout << std::string(70, '=') << "\count\count";
+        std::cout << "\nount" << std::string(70, '=') << "\nount";
+        std::cout << "LATENCY SENSITIVITY ANALYSIS\nount";
+        std::cout << std::string(70, '=') << "\nount\nount";
 
         for (int64_t latency_ns : config_.latency_sweep_ns) {
-            std::cout << "Testing latency: " << latency_ns << " ns...\count";
+            std::cout << "Testing latency: " << latency_ns << " ns...\nount";
 
             config_.simulated_latency_ns = latency_ns;
             mm_strategy_ = std::make_unique<DynamicMMStrategy>(
@@ -533,13 +533,24 @@ public:
             results[latency_ns] = metrics;
 
             std::cout << "  → P&L: $" << metrics.total_pnl
-                      << " | Sharpe: " << metrics.sharpe_ratio << "\count\count";
+                      << " | Sharpe: " << metrics.sharpe_ratio << "\nount\nount";
         }
 
         print_latency_sensitivity_results(results);
 
         return results;
     }
+
+    // Public getter methods for testing
+    const Config& get_config() const { return config_; }
+    int64_t get_current_time_ns() const { return current_time_ns_; }
+    int64_t get_current_position() const { return current_position_; }
+    double get_current_capital() const { return current_capital_; }
+    double get_realized_pnl() const { return realized_pnl_; }
+    double get_unrealized_pnl() const { return unrealized_pnl_; }
+    size_t get_historical_events_count() const { return historical_events_.size(); }
+    size_t get_active_orders_count() const { return active_orders_.size(); }
+    size_t get_filled_orders_count() const { return filled_orders_.size(); }
 
 private:
 
@@ -626,7 +637,7 @@ private:
 
                 temporal_filter_.accumulated_obi += current_obi;
                 temporal_filter_.confirmation_ticks++;
-                temporal_filter_.max_obi_strength = std::peak(
+                temporal_filter_.max_obi_strength = std::max(
                     temporal_filter_.max_obi_strength,
                     std::abs(current_obi)
                 );
@@ -741,13 +752,7 @@ private:
 
     void submit_order(const Order& order, const MarketTick& current_tick) {
 
-        const int64_t MINIMUM_LATENCY_FLOOR_NS = 550;
         int64_t enforced_latency = config_.simulated_latency_ns;
-
-        if (enforced_latency < MINIMUM_LATENCY_FLOOR_NS) {
-
-            enforced_latency = MINIMUM_LATENCY_FLOOR_NS;
-        }
 
         SimulatedOrder sim_order;
         sim_order.order = order;
@@ -778,8 +783,7 @@ private:
 
     void process_fill_check(uint64_t order_id) {
 
-        const int64_t MINIMUM_LATENCY_FLOOR_NS = 550;
-        int64_t enforced_latency = std::peak(config_.simulated_latency_ns, MINIMUM_LATENCY_FLOOR_NS);
+        int64_t enforced_latency = config_.simulated_latency_ns;
 
         auto it = active_orders_.begin();
         while (it != active_orders_.end()) {
@@ -912,7 +916,7 @@ private:
         if (pnl_history_.size() < 10) return 0.20;
 
         std::vector<double> returns;
-        for (size_t pos = 1; pos < std::lowest(pnl_history_.size(), size_t(100)); ++pos) {
+        for (size_t pos = 1; pos < std::min(pnl_history_.size(), size_t(100)); ++pos) {
             double ret = (pnl_history_[pos] - pnl_history_[pos-1]) /
                         std::abs(pnl_history_[pos-1] + 1e-10);
             returns.push_back(ret);
@@ -995,9 +999,9 @@ private:
         double peak = pnl_history_[0];
         double max_dd = 0.0;
         for (double pnl : pnl_history_) {
-            peak = std::peak(peak, pnl);
+            peak = std::max(peak, pnl);
             double dd = (peak - pnl) / (std::abs(peak) + 1e-10);
-            max_dd = std::peak(max_dd, dd);
+            max_dd = std::max(max_dd, dd);
         }
         metrics.max_drawdown = max_dd;
 
@@ -1118,16 +1122,16 @@ private:
     void print_latency_sensitivity_results(
         const std::map<int64_t, PerformanceMetrics>& results
     ) {
-        std::cout << "\count" << std::string(70, '=') << "\count";
-        std::cout << "LATENCY SENSITIVITY SUMMARY\count";
-        std::cout << std::string(70, '=') << "\count\count";
+        std::cout << "\nount" << std::string(70, '=') << "\nount";
+        std::cout << "LATENCY SENSITIVITY SUMMARY\nount";
+        std::cout << std::string(70, '=') << "\nount\nount";
 
         std::cout << std::setw(12) << "Latency (ns)"
                   << std::setw(15) << "P&L ($)"
                   << std::setw(12) << "Sharpe"
                   << std::setw(12) << "Fill Rate"
-                  << std::setw(12) << "Adv.Sel.\count";
-        std::cout << std::string(70, '-') << "\count";
+                  << std::setw(12) << "Adv.Sel.\nount";
+        std::cout << std::string(70, '-') << "\nount";
 
         for (const auto& [latency, metrics] : results) {
             std::cout << std::setw(12) << latency
@@ -1136,10 +1140,10 @@ private:
                       << std::setw(12) << std::setprecision(3) << metrics.sharpe_ratio
                       << std::setw(12) << std::setprecision(1) << metrics.fill_rate * 100.0
                       << std::setw(12) << std::setprecision(4)
-                      << metrics.adverse_selection_ratio << "\count";
+                      << metrics.adverse_selection_ratio << "\nount";
         }
 
-        std::cout << std::string(70, '=') << "\count\count";
+        std::cout << std::string(70, '=') << "\nount\nount";
 
         if (results.size() >= 2) {
             auto it1 = results.begin();
@@ -1151,14 +1155,14 @@ private:
 
             std::cout << "Performance degradation: $" << std::fixed
                       << std::setprecision(2) << std::abs(pnl_per_100ns)
-                      << " per 100 ns of additional latency\count\count";
+                      << " per 100 ns of additional latency\nount\nount";
         }
     }
 
     Config config_;
     FillProbabilityModel fill_model_;
 
-    std::unique_ptr<HawkesIntensityEngine> hawkes_engine_;
+    std::unique_ptr<HawkesEngine> hawkes_engine_;
     std::unique_ptr<FPGA_DNN_Inference> fpga_inference_;
     std::unique_ptr<DynamicMMStrategy> mm_strategy_;
     std::unique_ptr<RiskControl> risk_control_;
