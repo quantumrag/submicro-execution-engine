@@ -64,7 +64,7 @@ A **transparent, deterministic execution engine** that:
 - Simulates **kernel-bypass networking** (DPDK-style)
 - Implements **institutional-grade logging** and monitoring
 
-**Research & Education Only** — Not production-ready. No exchange connectivity included.
+**Research & Education Only** — Not production-ready. Hardware validation (DPDK/FPGA) is simulated. [Learn more](#hardware-validation--future-work).
 
 **PROPRIETARY LICENSE** — Commercial use prohibited. Written permission required. Contact: krishna@krishnabajpai.me
 
@@ -148,13 +148,13 @@ git clone https://github.com/krish567366/submicro-execution-engine.git
 cd submicro-execution-engine
 
 # 2. Build the system (automatic optimization flags)
-./build_all.sh
+./scripts/build_all.sh
 
 # 3. Run deterministic backtest
-./run_backtest.py
+scripts/run_backtest.py
 
 # 4. View results
-python3 verify_latency.py
+python3 scripts/verify_latency.py
 open dashboard/index.html  # Interactive metrics dashboard
 ```
 
@@ -258,7 +258,7 @@ One of the system's **core guarantees** is bit-identical replay capability:
 
 ```bash
 # Run backtest
-./run_backtest.py
+scripts/run_backtest.py
 
 # Verify deterministic replay
 cd logs
@@ -337,6 +337,37 @@ Open an issue with:
 
 ---
 
+## Hardware Validation & Future Work
+
+Full validation of kernel-bypass networking and FPGA-based inference requires access to specific NIC and FPGA hardware (e.g., DPDK-enabled NICs, FPGA accelerator cards).
+
+The current repository focuses on architecture, interfaces, and software-level integration. Hardware-backed benchmarking and production-grade bitstreams are planned future work and would require dedicated hardware access and funding.
+
+**If you are interested in sponsoring hardware validation or collaborating on vendor-specific implementations, feel free to reach out.**
+
+### Kernel-bypass NICs
+
+True kernel bypass depends on:
+- **Specific NIC hardware** (NVIDIA/Mellanox, Intel, Solarflare/Xilinx, FPGA NICs)
+- **Driver stacks** (DPDK, RDMA verbs, Onload, custom DMA paths)
+- **NIC firmware** and queue configuration
+
+There is no realistic way to ship a single, generic kernel-bypass implementation that works across all vendors and drivers. The only viable approach is to define a clean abstraction and allow users to plug in vendor-specific implementations.
+
+### FPGA Inference
+
+The same constraint applies to FPGA-based inference:
+- **FPGA implementations** depend on the exact FPGA model, vendor toolchain (Xilinx Vitis/Vivado, Intel Quartus), and PCIe/DMA configuration.
+- **The inference pipeline** (HLS, RTL, data layout, batching, clocking) is tightly coupled to the target hardware.
+- **Bitstreams** are not portable across vendors or across FPGA families.
+
+In this repository:
+- FPGA inference is represented as an architectural interface / placeholder.
+- Software emulation is used where hardware is not available.
+- For specific hardware targets, custom HLS/RTL integration can be implemented.
+
+---
+
 ## 📖 Academic References
 
 <details>
@@ -390,6 +421,7 @@ This system **IS**:
 - Compliance systems (kill-switches, position limits)
 - Risk management infrastructure
 - Extensive testing and regulatory approval
+- **Vendor-specific hardware integration** (DPDK/FPGA)
 
 **Legal:** No warranty. Use at your own risk. See LICENSE for details.
 
@@ -416,10 +448,11 @@ If this research and codebase helps with your work, please consider sponsoring:
 [![GitHub Sponsors](https://img.shields.io/badge/Sponsor-krish567366-ff69b4?style=for-the-badge&logo=github)](https://github.com/sponsors/krish567366)
 
 Your support helps fund:
+- **Hardware**: Dedicated access to DPDK-enabled NICs and FPGA accelerator cards for validation
+-  **Funding**: Production-grade bitstreams and vendor-specific implementations
 -  **Research**: Advanced algorithms and optimization techniques
-- 🖥️ **Hardware**: High-end testing equipment and servers
--  **Documentation**: Comprehensive guides and tutorials
-- 🌐 **Open Source**: Keeping parts of this project freely available
+-  **Documentation**: Comprehensive guides and institutional-grade whitepapers
+- **Open Source**: Keeping the core research framework freely available
 
 ---
 
