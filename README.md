@@ -42,6 +42,13 @@
 
 **[View Interactive Documentation →](https://submicro.krishnabajpai.me/)**
 
+---
+
+> [!TIP]
+> **Branching Strategy**:
+> *   **`main`**: Fundamental execution infrastructure. Primary focus is **Latency Minimization** (median < 900ns) and system determinism.
+> *   **`alpha-optimized`**: Quantitative modeling layer. Primary focus is **Alpha & Signal Optimization** (multi-kernel Hawkes, SIMD features) while keeping latency within sub-microsecond thresholds.
+
 </div>
 
 ---
