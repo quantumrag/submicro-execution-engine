@@ -570,7 +570,7 @@ std::mt19937_64 rng(42);  // Deterministic
 
 **Event Replay:**
 ```bash
-./run_backtest.py --seed=42 --deterministic
+scripts/run_backtest.py --seed=42 --deterministic
 ```
 
 **Verification:**
