@@ -279,6 +279,7 @@ latency_metrics.log: OK
 | [`LATENCY_BUDGET.md`](docs/LATENCY_BUDGET.md) | Component-level breakdown |
 | [`INSTITUTIONAL_LOGGING_COMPARISON.md`](docs/INSTITUTIONAL_LOGGING_COMPARISON.md) | Audit-grade logging |
 | [`PRODUCTION_READINESS.md`](docs/PRODUCTION_READINESS.md) | Deployment considerations |
+| [`ENGAGEMENTS.md`](docs/ENGAGEMENTS.md) | Commercial & Research support |
 | [`logs/README.md`](logs/README.md) | Multi-layer timestamp verification |
 
 ---
@@ -335,19 +336,20 @@ Open an issue with:
 
 ---
 
-## Hardware Validation & Commercial Support
+## Commercial & Research Engagements
 
-This repository is open for research and evaluation.
+This repository serves as a framework for research and evaluation. For institutional requirements requiring production-grade performance or custom research collaborations, we offer several engagement models:
 
-Hardware-specific integrations (kernel-bypass NICs, FPGA inference pipelines), production hardening, and vendor-specific optimizations are not bundled due to hardware dependency, but are available commercially.
+-   **Institutional Implementation**: Custom DPDK/RDMA kernel-bypass and FPGA HLS/RTL acceleration.
+-   **Performance Engineering**: Architecture reviews, latency bottleneck audits, and system tuning.
+-   **Research Collaboration**: Market microstructure modeling and low-latency ML inference.
+-   **Strategy Optimization**: Migration of Python/Julia models to AVX-512 optimized C++.
 
-If you are interested in:
-- NIC-specific kernel-bypass implementations
-- FPGA-based inference pipelines
-- Latency benchmarking and tuning
-- Architecture reviews for low-latency systems
+See [**`ENGAGEMENTS.md`**](docs/ENGAGEMENTS.md) for more details.
 
-Please reach out for collaboration or commercial support.
+**Contact:** [krishna@krishnabajpai.me](mailto:krishna@krishnabajpai.me)
+
+*Notice: Pricing is not disclosed publicly. All engagements are scoped and quoted based on project complexity and hardware requirements.*
 
 ### Kernel-bypass NICs
 
