@@ -1,9 +1,7 @@
 #!/bin/bash
 
-##############################################################################
-# Build Script for Ultra-Low-Latency Trading System
-# Performance: 0.73 μs (730 nanoseconds)
-##############################################################################
+# Ultra-Low-Latency Trading System Build Script
+# Performance target: 0.73 μs
 
 set -e  # Exit on error
 
@@ -13,13 +11,6 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
-
-echo -e "${BLUE}"
-echo "╔═══════════════════════════════════════════════════════════════╗"
-echo "║   Ultra-Low-Latency Trading System Build Script              ║"
-echo "║   Performance: 0.73 μs (730 ns)                               ║"
-echo "╚═══════════════════════════════════════════════════════════════╝"
-echo -e "${NC}"
 
 # Compiler settings
 CXX="${CXX:-g++}"

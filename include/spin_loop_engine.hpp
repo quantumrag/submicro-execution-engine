@@ -14,21 +14,6 @@
     #include <mach/thread_act.h>
 #endif
 
-/**
- * Single-Threaded Spin-Loop Engine + Math LUT Optimizations
- * 
- * Target Savings: 10-30 ns from eliminating OS scheduling overhead
- *                 5-15 ns from math LUT lookups
- * 
- * Key Techniques:
- * 1. Busy-wait spin loop (100% CPU dedication, no context switches)
- * 2. CPU affinity pinning (dedicated core, no interrupts)
- * 3. Real-time priority (prevent OS from preempting)
- * 4. Math LUTs (pre-computed ln, exp, sqrt for fast lookups)
- * 
- * Applies to: Phases 2-8 (entire critical path)
- */
-
 namespace hft {
 namespace spin_loop {
 
@@ -38,9 +23,6 @@ namespace spin_loop {
 
 /**
  * Pin thread to specific CPU core
- * 
- * Critical for HFT: Prevents OS from moving thread across cores
- * (which would invalidate cache and add 100-1000ns latency)
  */
 inline bool pin_to_cpu(int cpu_id) {
 #if defined(__linux__)
@@ -115,10 +97,6 @@ inline bool set_realtime_priority() {
  * 
  * Range: [0.1, 10.0]
  * Precision: 0.0001 steps = 100,000 entries
- * Memory: ~800 KB (acceptable for L3 cache)
- * 
- * Speedup: ln() FPU operation ~20-30ns → LUT lookup ~3-5ns
- * Savings: ~15-25ns per call
  */
 class LnLookupTable {
 public:
@@ -136,7 +114,7 @@ public:
     }
     
     /**
-     * Fast ln lookup (~3-5ns vs ~20-30ns for std::log)
+     * Fast ln lookup
      */
     inline double lookup(double x) const {
         // Clamp to valid range
@@ -175,10 +153,6 @@ private:
  * 
  * Range: [-10.0, 10.0]
  * Precision: 0.001 steps = 20,000 entries
- * Memory: ~160 KB
- * 
- * Speedup: exp() FPU ~25-35ns → LUT ~3-5ns
- * Savings: ~20-30ns per call
  */
 class ExpLookupTable {
 public:
@@ -225,10 +199,6 @@ private:
  * 
  * Range: [0.0, 1000.0]
  * Precision: 0.01 steps = 100,000 entries
- * Memory: ~800 KB
- * 
- * Speedup: sqrt() FPU ~15-20ns → LUT ~3-5ns
- * Savings: ~10-15ns per call
  */
 class SqrtLookupTable {
 public:
@@ -304,19 +274,6 @@ inline double fast_sqrt_interp(double x) { return get_sqrt_lut().lookup_interp(x
 
 /**
  * Single-threaded busy-wait engine for critical path processing
- * 
- * Architecture:
- * 1. Pin to dedicated CPU core (avoid cache invalidation)
- * 2. Set real-time priority (prevent preemption)
- * 3. Busy-wait on atomic flag (no sleep, 100% CPU)
- * 4. Process work immediately when available
- * 
- * Latency Impact:
- * - Eliminates OS scheduling overhead: ~10-50ns
- * - Eliminates wake-up latency: ~1-10μs
- * - Eliminates context switch: ~1-5μs
- * 
- * Total savings: ~1-10μs in worst case, ~10-50ns in best case
  */
 template<typename WorkFunc>
 class SpinLoopEngine {
@@ -366,9 +323,7 @@ public:
     }
     
     /**
-     * Signal work is available (ultra-fast)
-     * 
-     * Performance: ~1-2ns (atomic store)
+     * Signal work is available
      */
     inline void signal_work() {
         work_available_.store(true, std::memory_order_release);
@@ -394,35 +349,6 @@ private:
     std::thread thread_;
     int cpu_id_;
 };
-
-// ====
-// Performance Summary
-// ====
-
-/**
- * Spin-Loop + Math LUT Optimization Impact
- * 
- * Optimization          | Before (ns) | After (ns) | Savings
- * ─────────────────────|─────────────|────────────|─────────
- * Thread wake-up       | 1,000-10,000| 1-2        | ~10 μs
- * Context switch       | 1,000-5,000 | 0          | ~5 μs
- * OS scheduling        | 10-50       | 0          | ~30 ns
- * ln() function        | 20-30       | 3-5        | ~25 ns
- * exp() function       | 25-35       | 3-5        | ~30 ns
- * sqrt() function      | 15-20       | 3-5        | ~15 ns
- * 
- * Total Impact:
- * - Best case (no context switch): ~100ns savings per iteration
- * - Worst case (with context switch): ~15μs savings per iteration
- * - Math-heavy workloads: ~70ns savings from LUTs alone
- * 
- * Trade-offs:
- * - Dedicated CPU core (100% usage even when idle)
- * - Higher power consumption
- * - Memory overhead (~2 MB for LUTs)
- * 
- * Worth it for HFT: YES! Latency is everything.
- */
 
 } // namespace spin_loop
 } // namespace hft

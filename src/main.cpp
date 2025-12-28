@@ -172,10 +172,7 @@ void configure_system_for_low_latency() {
 // Main Trading Loop
 int main() {
     std::cout << "=== Ultra-Low-Latency HFT System ===" << std::endl;
-    std::cout << "Architecture: C++ (90%) + Rust (10%) + FPGA-style pipelines" << std::endl;
-    std::cout << "Features: Shared Memory, Lock-Free, Nanosecond Scheduling, Zero-GC" << std::endl;
-    std::cout << "Target: Sub-microsecond decision latency" << std::endl;
-    std::cout << "Press Ctrl+C to shutdown\n" << std::endl;
+    std::cout << "Target: Sub-microsecond decision latency\n" << std::endl;
     
     configure_system_for_low_latency();
     
@@ -198,16 +195,7 @@ int main() {
     scheduler::TimingWheelScheduler timing_wheel(1024, std::chrono::microseconds(10));
     std::cout << "[INIT] Timing Wheel Scheduler (1024 slots, 10µs granularity)" << std::endl;
     
-    // 2. Hawkes Process Engine (signal generation)
-    HawkesIntensityEngine hawkes(
-        /* baseline_buy    */ 10.0,
-        /* baseline_sell   */ 10.0,
-        /* alpha_self      */ 0.3,
-        /* alpha_cross     */ 0.1,
-        /* power_law_beta  */ 1e-3,
-        /* power_law_gamma */ 1.8,
-        /* max_history     */ 1000
-    );
+    HawkesIntensityEngine hawkes(10.0, 10.0, 0.3, 0.1, 1e-3, 1.8, 1000);
     std::cout << "[INIT] Hawkes Intensity Engine initialized" << std::endl;
     
     // 3. FPGA Inference Engine (compute layer)
@@ -308,9 +296,7 @@ int main() {
         state.previous_tick = state.last_tick;
         state.last_tick = tick;
         
-        // 
-        // Step 2: Update Hawkes Process (signal generation)
-        // 
+        // Signal generation
         if (tick.trade_volume > 0) {
             TradingEvent event(tick.timestamp, tick.trade_side, tick.asset_id);
             hawkes.update(event);
@@ -319,9 +305,7 @@ int main() {
         const double hawkes_buy_intensity = hawkes.get_buy_intensity();
         const double hawkes_sell_intensity = hawkes.get_sell_intensity();
         
-        // 
-        // Step 3: Extract microstructure features
-        // 
+        // Feature extraction
         const auto features = FPGA_DNN_Inference::extract_features(
             tick,
             state.previous_tick,
@@ -330,9 +314,7 @@ int main() {
             hawkes_sell_intensity
         );
         
-        // 
-        // Step 4: FPGA inference (400ns deterministic latency)
-        // 
+        // Prediction
         const auto prediction = fpga_inference.predict(features);
         // prediction = [buy_score, hold_score, sell_score]
         
@@ -352,10 +334,8 @@ int main() {
             tick.mid_price
         );
         
-        // 
-        // Step 7: Generate optimal quotes (HJB/AS model)
-        // 
-        const double time_remaining = 300.0;  // Fixed 5-min horizon for simplicity
+        // Quote generation
+        const double time_remaining = 300.0;
         const QuotePair quotes = mm_strategy.calculate_quotes(
             tick.mid_price,
             state.current_position,
@@ -363,9 +343,7 @@ int main() {
             latency_cost
         );
         
-        // 
-        // Step 8: Risk checks
-        // 
+        // Risk management
         if (quotes.bid_price > 0 && quotes.ask_price > 0) {
             // Create potential orders
             Order bid_order(cycle_count * 2, tick.asset_id, Side::BUY, 

@@ -54,7 +54,7 @@ private:
         }
     }
     
-    // Calculate OFI deltas using SIMD (~80ns → ~40ns with SIMD)
+    // Calculate OFI deltas using SIMD
     inline void calculate_ofi_simd(std::array<double, 10>& bid_ofi, std::array<double, 10>& ask_ofi) {
 #if defined(__AVX2__) || defined(__AVX512F__)
         // x86 AVX2 path: Process 4 levels at a time
@@ -154,7 +154,7 @@ public:
         }
     }
     
-    // Normalize features using SIMD (~80ns → ~30ns with SIMD)
+    // Normalize features using SIMD
     inline void normalize_simd(double* features, size_t num_features) {
 #if defined(__AVX2__) || defined(__AVX512F__)
         // x86 AVX2: Process 4 features at a time
@@ -291,22 +291,22 @@ public:
         normalizer_.set_parameters(means, stddevs, num_features);
     }
     
-    // Calculate all features with SIMD optimization (~420ns total instead of 520ns)
+    // Calculate all features with SIMD optimization 
     inline void calculate_features_fast(
         const double* bid_qtys, const double* ask_qtys, size_t num_levels,
         double* output_features
     ) {
-        // Update OFI calculator with new quantities (~10ns)
+        // Update OFI calculator with new quantities
         ofi_calc_.update_quantities(bid_qtys, ask_qtys, num_levels);
         
-        // Calculate OFI deltas (SIMD optimized: ~40ns instead of 80ns)
+        // Calculate OFI deltas
         std::array<double, 10> bid_ofi, ask_ofi;
         ofi_calc_.calculate_ofi_simd(bid_ofi, ask_ofi);
         
-        // Calculate aggregated OFI (~20ns)
+        // Calculate aggregated OFI
         double total_ofi = ofi_calc_.calculate_total_ofi_simd(bid_ofi, ask_ofi);
         
-        // Calculate imbalance (SIMD optimized: ~30ns instead of 40ns)
+        // Calculate imbalance
         double volume_imbalance = imbalance_calc_.calculate_volume_imbalance_simd(
             bid_qtys, ask_qtys, num_levels
         );
@@ -323,7 +323,7 @@ public:
         }
         output_features[3] = top5_ofi;
         
-        // Add spread, mid-price, etc. (scalar operations, ~50ns)
+        // Add spread, mid-price, etc. 
         if (num_levels > 0) {
             output_features[4] = ask_qtys[0] > 0 ? ask_qtys[0] : 0.0;  // Best ask qty
             output_features[5] = bid_qtys[0] > 0 ? bid_qtys[0] : 0.0;  // Best bid qty
@@ -334,7 +334,7 @@ public:
             output_features[i] = 0.0;
         }
         
-        // Normalize all features (SIMD optimized: ~30ns instead of 80ns)
+        // Normalize all features
         normalizer_.normalize_simd(output_features, 15);
     }
     

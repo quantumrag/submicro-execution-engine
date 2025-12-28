@@ -34,8 +34,7 @@ public:
 
         current_time_ = event.arrival_time;
         
-        // Calculate intensities: lambda = mu + alpha_self * state + alpha_cross * state_other
-        // Note: alpha here should be pre-multiplied by beta for standard Hawkes intensity
+        // Calculate intensities
         intensity_buy_ = mu_buy_ + (alpha_self_ * beta_ * state_buy_) + (alpha_cross_ * beta_ * state_sell_);
         intensity_sell_ = mu_sell_ + (alpha_self_ * beta_ * state_sell_) + (alpha_cross_ * beta_ * state_buy_);
     }
@@ -91,9 +90,6 @@ private:
 
 /**
  * Vectorized Multi-Kernel Hawkes Engine
- * 
- * Supports modeling excitation across multiple time scales (betas) simultaneously
- * using SIMD (AVX2/AVX-512) for O(1) update complexity.
  * 
  * Target: Capture both microstructure 'burstiness' (high beta) 
  *         and medium-term price trends (low beta).
