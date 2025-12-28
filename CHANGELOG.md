@@ -5,11 +5,14 @@ All notable changes to the **Sub-Microsecond Execution Engine** will be document
 ## [v2.2.0] - 2025-12-28
 
 ### Added
-- **Vectorized Multi-Kernel Hawkes Engine**: Implemented a SIMD-accelerated engine supporting 4 simultaneous kernels. Captures multi-scale market excitation from microseconds to milliseconds in $O(1)$ time.
-- **Engagement Framework**: Added `docs/ENGAGEMENTS.md` and GitHub issue templates for institutional and research collaboration.
+- **Vectorized Multi-Kernel Hawkes Engine**: Implemented a SIMD-accelerated engine supporting 4 simultaneous kernels.
+  - *Why it helps:* Markets react at different speeds; this captures both microsecond liquidity bursts and millisecond price trends simultaneously, significantly improving signal accuracy without increasing latency.
+- **Engagement Framework**: Added `docs/ENGAGEMENTS.md` and GitHub issue templates.
+  - *Why it helps:* Provides a structured pathway for institutional partners and research labs to request custom hardware (FPGA/NIC) integrations or collaborative research without public disclosure.
 
 ### Improved
-- **Build System**: Updated `scripts/build_all.sh` with automatic macOS Homebrew path detection for Boost and OpenSSL.
+- **Build System**: Updated `scripts/build_all.sh` with automatic macOS Homebrew path detection.
+  - *Why it helps:* Streamlines developer onboarding and ensures seamless local testing on modern Apple Silicon (ARM64) research environments.
 - **Documentation**: Simplified README and organized commercial support sections.
 
 ## [v2.1.0] - 2025-12-16

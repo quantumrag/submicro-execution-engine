@@ -11,19 +11,19 @@ const releases = [
       {
         type: 'new',
         title: 'Vectorized Multi-Kernel Hawkes engine',
-        description: 'New SIMD-accelerated engine supporting 4 simultaneous kernels. Captures multi-scale market excitation from microseconds to milliseconds in O(1) time. Integrated with fast_exp LUT for sub-microsecond updates.',
+        description: 'New SIMD-accelerated engine supporting 4 simultaneous kernels. By capturing both micro-bursts and macro-trends, it significantly increases signal reliability across different time scales without adding any latency overhead.',
         icon: Zap,
       },
       {
         type: 'new',
         title: 'Institutional Engagement Framework',
-        description: 'Added formal documentation and issue templates for commercial support, research collaboration, and FPGA/NIC hardware integration at docs/ENGAGEMENTS.md.',
+        description: 'Formalized pathway for institutional partners to request custom hardware integration (FPGA/NIC) and specialized research. Streamlines collaboration while maintaining professional privacy for proprietary trading firms.',
         icon: Shield,
       },
       {
         type: 'enhancement',
         title: 'Improved macOS Build Toolchain',
-        description: 'Automated detection of Homebrew paths for Boost and OpenSSL in build scripts. Fixed compilation headers for ARM64/Apple Silicon architectures.',
+        description: 'Automated dependency resolution for macOS research environments. Eliminates environment setup friction, enabling immediate experimentation on the latest hardware platforms.',
         icon: Code,
       },
     ],
