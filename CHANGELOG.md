@@ -2,6 +2,20 @@
 
 All notable changes to the **Sub-Microsecond Execution Engine** will be documented in this file.
 
+## [v2.4.0] - 2025-12-30
+
+### Added
+- **Jitter Profiler & Stall Detector**: New `JitterProfiler` class to detect micro-stalls caused by OS interrupts (SMI, Context Switches) in the busy-wait loop.
+  - *Why it helps:* "Mean latency" metrics hide tail events. HFT requires consistent variance (jitter). This tool flags if the isolated core is truly isolated or being interrupted.
+- **Explicit L1 Cache Prefetching**: Added `prefetch_L1` and `prefetch_next_line` utilities.
+  - *Why it helps:* Allows hot-path loops to pull the next 64-byte cache line into L1 cache before it's needed, hiding the ~80ns DRAM latency.
+
+## [v2.3.0] - 2025-12-30
+
+### Added
+- **SIMD-Accelerated Alpha Extraction**: Replaced scalar feature extraction loops with hand-optimized **AVX2 (x86)** and **NEON (ARM)** intrinsics within `simd_features.hpp`.
+  - *Why it helps:* Shifts the "Order Flow Imbalance" (OFI) and volume imbalance calculations from sequential $O(Depth)$ to effectively constant hardware-parallel time. This mimics FPGA-like pipelining in software, directly reducing the critical path latency for signal generation.
+
 ## [v2.2.0] - 2025-12-28
 
 ### Added

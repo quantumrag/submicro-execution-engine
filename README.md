@@ -140,6 +140,18 @@ A **transparent, deterministic execution engine** that:
 - Latency breakdown analysis
 
 </td>
+</table>
+<br/>
+
+<table>
+<tr>
+<td colspan="2">
+
+### **New: Jitter Profiler & Stall Detection**
+> **"If you can't measure tail latency, you can't fix it."**
+A built-in nanosecond-resolution profiler detects **System Management Interrupts (SMIs)** and scheduler preemption by measuring the cycle-gap between busy-wait iterations. This ensures deep visibility into the "Zero-Interruption" guarantee required for p99 latency stability.
+
+</td>
 </tr>
 </table>
 
