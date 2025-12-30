@@ -306,9 +306,8 @@ int main() {
         const double hawkes_sell_intensity = hawkes.get_sell_intensity();
         
         // Feature extraction
-        const auto features = FPGA_DNN_Inference::extract_features(
+        const auto features = fpga_inference.extract_features(
             tick,
-            state.previous_tick,
             state.reference_asset_tick,
             hawkes_buy_intensity,
             hawkes_sell_intensity

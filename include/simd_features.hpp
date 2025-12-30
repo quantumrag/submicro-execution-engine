@@ -33,21 +33,35 @@ struct alignas(64) Features {
 };
 
 // vectorized ofi calc - processes 10 levels at once
-class FastOFI {
-private:
+// vectorized ofi calc - processes 10 levels at once
+class SIMDOFICalculator {
+public:
+    SIMDOFICalculator() {
         previous_bid_quantities_.fill(0.0);
         previous_ask_quantities_.fill(0.0);
         current_bid_quantities_.fill(0.0);
         current_ask_quantities_.fill(0.0);
     }
     
-    // Update current quantities from LOB
-    inline void update_quantities(const double* bid_qtys, const double* ask_qtys, size_t num_levels) {
+    // Update current quantities from LOB (accepts uint64_t from MarketTick)
+    inline void update_quantities(const uint64_t* bid_qtys, const uint64_t* ask_qtys, size_t num_levels) {
         // Store previous state
         previous_bid_quantities_ = current_bid_quantities_;
         previous_ask_quantities_ = current_ask_quantities_;
         
-        // Update current state
+        // Update current state with implicit cast to double
+        // Unrolling for 10 levels (common case)
+        for (size_t i = 0; i < num_levels && i < 10; ++i) {
+            current_bid_quantities_[i] = static_cast<double>(bid_qtys[i]);
+            current_ask_quantities_[i] = static_cast<double>(ask_qtys[i]);
+        }
+    }
+    
+    // Update current quantities from LOB (double version for flexibility)
+    inline void update_quantities(const double* bid_qtys, const double* ask_qtys, size_t num_levels) {
+        previous_bid_quantities_ = current_bid_quantities_;
+        previous_ask_quantities_ = current_ask_quantities_;
+        
         for (size_t i = 0; i < num_levels && i < 10; ++i) {
             current_bid_quantities_[i] = bid_qtys[i];
             current_ask_quantities_[i] = ask_qtys[i];
@@ -58,7 +72,7 @@ private:
     inline void calculate_ofi_simd(std::array<double, 10>& bid_ofi, std::array<double, 10>& ask_ofi) {
 #if defined(__AVX2__) || defined(__AVX512F__)
         // x86 AVX2 path: Process 4 levels at a time
-        for (size_t i = 0; i < 10; i += 4) {
+        for (size_t i = 0; i < 8; i += 4) { // Process first 8
             __m256d curr_bid = _mm256_loadu_pd(&current_bid_quantities_[i]);
             __m256d prev_bid = _mm256_loadu_pd(&previous_bid_quantities_[i]);
             __m256d curr_ask = _mm256_loadu_pd(&current_ask_quantities_[i]);
@@ -69,6 +83,11 @@ private:
             
             _mm256_storeu_pd(&bid_ofi[i], delta_bid);
             _mm256_storeu_pd(&ask_ofi[i], delta_ask);
+        }
+        // Handle remaining 2 levels
+        for (size_t i = 8; i < 10; ++i) {
+             bid_ofi[i] = current_bid_quantities_[i] - previous_bid_quantities_[i];
+             ask_ofi[i] = current_ask_quantities_[i] - previous_ask_quantities_[i];
         }
 #elif defined(HAS_NEON)
         // ARM NEON path: Process 2 levels at a time
@@ -99,7 +118,7 @@ private:
 #if defined(__AVX2__) || defined(__AVX512F__)
         __m256d sum = _mm256_setzero_pd();
         
-        for (size_t i = 0; i < 10; i += 4) {
+        for (size_t i = 0; i < 8; i += 4) {
             __m256d bid = _mm256_loadu_pd(&bid_ofi[i]);
             __m256d ask = _mm256_loadu_pd(&ask_ofi[i]);
             __m256d diff = _mm256_sub_pd(bid, ask);
@@ -108,7 +127,13 @@ private:
         
         double result[4];
         _mm256_storeu_pd(result, sum);
-        return result[0] + result[1] + result[2] + result[3];
+        double total = result[0] + result[1] + result[2] + result[3];
+        
+        // Remaining 2
+        for (size_t i = 8; i < 10; ++i) {
+            total += (bid_ofi[i] - ask_ofi[i]);
+        }
+        return total;
 #elif defined(HAS_NEON)
         float64x2_t sum = vdupq_n_f64(0.0);
         
@@ -291,7 +316,7 @@ public:
         normalizer_.set_parameters(means, stddevs, num_features);
     }
     
-    // Calculate all features with SIMD optimization 
+    // Calculate all features with SIMD optimization (double version)
     inline void calculate_features_fast(
         const double* bid_qtys, const double* ask_qtys, size_t num_levels,
         double* output_features
@@ -311,6 +336,48 @@ public:
             bid_qtys, ask_qtys, num_levels
         );
         
+        finalize_features(output_features, total_ofi, bid_ofi, ask_ofi, volume_imbalance, bid_qtys[0], ask_qtys[0], num_levels);
+    }
+
+    // Calculate all features with SIMD optimization (uint64_t version for MarketTick)
+    inline void calculate_features_fast(
+        const uint64_t* bid_qtys, const uint64_t* ask_qtys, size_t num_levels,
+        double* output_features
+    ) {
+        // Update OFI calculator with new quantities (accepts uint64_t directly)
+        ofi_calc_.update_quantities(bid_qtys, ask_qtys, num_levels);
+        
+        // Calculate OFI deltas
+        std::array<double, 10> bid_ofi, ask_ofi;
+        ofi_calc_.calculate_ofi_simd(bid_ofi, ask_ofi);
+        
+        // Calculate aggregated OFI
+        double total_ofi = ofi_calc_.calculate_total_ofi_simd(bid_ofi, ask_ofi);
+        
+        // Calculate imbalance - need to cast for imbalance calc or overload it?
+        // Simples approach: cast top levels or add overload to imbalance calc. 
+        // For now, let's just do a quick scalar loop for imbalance if SIMD overload missing, 
+        // OR better: cast to double array then call SIMD? expensive.
+        // Best: reuse the double quantities stored in ofi_calc_? No, OFI calc stores them in private arrays.
+        // Lightweight calc here:
+        double total_bid = 0, total_ask = 0;
+        for(size_t i=0; i<num_levels && i<10; ++i) { // Limit to 10 for speed
+            total_bid += static_cast<double>(bid_qtys[i]);
+            total_ask += static_cast<double>(ask_qtys[i]);
+        }
+        double volume_imbalance = (total_bid + total_ask > 0) ? (total_bid - total_ask)/(total_bid + total_ask) : 0.0;
+        
+        double best_bid = (num_levels > 0) ? static_cast<double>(bid_qtys[0]) : 0.0;
+        double best_ask = (num_levels > 0) ? static_cast<double>(ask_qtys[0]) : 0.0;
+
+        finalize_features(output_features, total_ofi, bid_ofi, ask_ofi, volume_imbalance, best_bid, best_ask, num_levels);
+    }
+
+private:
+    inline void finalize_features(double* output_features, double total_ofi, 
+                                const std::array<double, 10>& bid_ofi, const std::array<double, 10>& ask_ofi,
+                                double volume_imbalance, double best_bid_qty, double best_ask_qty, size_t num_levels) {
+        
         // Pack features into output array
         output_features[0] = total_ofi;
         output_features[1] = bid_ofi[0] - ask_ofi[0];  // Top-1 OFI
@@ -318,15 +385,15 @@ public:
         
         // Calculate top-5 OFI
         double top5_ofi = 0.0;
-        for (size_t i = 0; i < 5 && i < num_levels; ++i) {
-            top5_ofi += (bid_ofi[i] - ask_ofi[i]);
+        for (size_t i = 0; i < 5 && i < 10; ++i) {
+             top5_ofi += (bid_ofi[i] - ask_ofi[i]);
         }
         output_features[3] = top5_ofi;
         
         // Add spread, mid-price, etc. 
         if (num_levels > 0) {
-            output_features[4] = ask_qtys[0] > 0 ? ask_qtys[0] : 0.0;  // Best ask qty
-            output_features[5] = bid_qtys[0] > 0 ? bid_qtys[0] : 0.0;  // Best bid qty
+            output_features[4] = best_ask_qty;
+            output_features[5] = best_bid_qty;
         }
         
         // Pad remaining features with zeros

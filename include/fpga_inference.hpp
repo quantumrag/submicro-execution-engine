@@ -1,6 +1,7 @@
 #pragma once
 
 #include "spin_loop_engine.hpp"
+#include "simd_features.hpp"
 
 namespace hft {
 
@@ -88,26 +89,37 @@ public:
         return fixed_latency_ns_;
     }
 
-    static MicrostructureFeatures extract_features(
+    // Instance method - uses internal SIMD engine for stateful tracking
+    MicrostructureFeatures extract_features(
         const MarketTick& current_tick,
-        const MarketTick& previous_tick,
         const MarketTick& reference_asset_tick,
         double hawkes_buy_intensity,
         double hawkes_sell_intensity) {
 
         MicrostructureFeatures features;
-
-        features.ofi_level_1 = compute_ofi(current_tick, previous_tick, 1);
-        features.ofi_level_5 = compute_ofi(current_tick, previous_tick, 5);
-        features.ofi_level_10 = compute_ofi(current_tick, previous_tick, 10);
-
+        
+        // 1. Hardware Accelerated Order Book Features (SIMD)
+        // Computes OFI, Imbalance, and Quantities in parallel
+        alignas(64) double simd_output[16];
+        fast_engine_.calculate_features_fast(
+            current_tick.bid_sizes.data(),
+            current_tick.ask_sizes.data(),
+            current_tick.depth_levels,
+            simd_output
+        );
+        
+        // Map SIMD output to features
+        // Mapping from FastFeatureEngine:
+        // [0]=TotalOFI, [1]=Top1OFI, [2]=VolImb, [3]=Top5OFI, [4]=BestAskQty, [5]=BestBidQty
+        features.ofi_level_10 = simd_output[0];   // Total OFI (10 levels)
+        features.ofi_level_1 = simd_output[1];    // Top 1 OFI
+        features.volume_imbalance = simd_output[2];
+        features.ofi_level_5 = simd_output[3];    // Top 5 OFI
+        
+        // 2. Compute remaining price-based features (Scalar is fine/fast enough here)
         const double current_spread = current_tick.ask_price - current_tick.bid_price;
         const double ref_spread = reference_asset_tick.ask_price - reference_asset_tick.bid_price;
         features.spread_ratio = (ref_spread > 1e-10) ? (current_spread / ref_spread) : 1.0;
-
-        const double total_volume = current_tick.bid_size + current_tick.ask_size;
-        features.volume_imbalance = (total_volume > 0) ?
-            (static_cast<double>(current_tick.bid_size) - static_cast<double>(current_tick.ask_size)) / total_volume : 0.0;
 
         features.hawkes_buy_intensity = hawkes_buy_intensity;
         features.hawkes_sell_intensity = hawkes_sell_intensity;
@@ -116,19 +128,25 @@ public:
 
         features.bid_ask_spread_bps = (current_tick.mid_price > 1e-10) ?
             (current_spread / current_tick.mid_price) * 10000.0 : 0.0;
+            
+        // Track momentum (using internal state of simple price)
+        features.mid_price_momentum = current_tick.mid_price - last_mid_price_;
+        last_mid_price_ = current_tick.mid_price;
 
-        features.mid_price_momentum = current_tick.mid_price - previous_tick.mid_price;
-
-        if (current_tick.trade_volume > 0 && previous_tick.mid_price > 1e-10) {
-            const double price_impact = std::abs(current_tick.mid_price - previous_tick.mid_price);
-            const double volume = static_cast<double>(current_tick.trade_volume);
-            features.trade_flow_toxicity = (volume > 0) ? price_impact / volume : 0.0;
+        if (current_tick.trade_volume > 0) {
+            // Approximation: price moved / volume
+            features.trade_flow_toxicity = std::abs(features.mid_price_momentum) / static_cast<double>(current_tick.trade_volume);
+        } else {
+            features.trade_flow_toxicity = 0.0;
         }
 
         return features;
     }
 
 private:
+    hft::simd_features::FastFeatureEngine fast_engine_;
+    double last_mid_price_ = 0.0;
+
     static double compute_ofi(const MarketTick& current,
                              const MarketTick& previous,
                              size_t depth) {
