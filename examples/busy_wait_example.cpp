@@ -93,15 +93,15 @@ void example_full_trading_system() {
     std::cout << "═══════════════════════════════════════════════════════\n\n";
     
     // Step 1: Pin to isolated CPU core
-    system::CPUIsolation::pin_to_core(2);  // Core 2 isolated via isolcpus=2
+    system_determinism::CPUIsolation::pin_to_core(2);  // Core 2 isolated via isolcpus=2
     std::cout << "Pinned to CPU core 2 (isolated, no interrupts)\n";
     
     // Step 2: Set real-time priority
-    system::RealTimePriority::set_priority(49);  // SCHED_FIFO priority 49
+    system_determinism::RealTimePriority::set_realtime_priority(49);  // SCHED_FIFO priority 49
     std::cout << "Set SCHED_FIFO priority 49 (kernel can't preempt)\n";
     
     // Step 3: Lock memory
-    system::MemoryLocking::lock_all_memory();
+    system_determinism::MemoryLocking::lock_all_memory();
     std::cout << "Locked all memory (no page faults)\n";
     
     // Step 4: Initialize NIC
@@ -115,7 +115,7 @@ void example_full_trading_system() {
     // Step 5: Initialize trading components
     ArrayBasedOrderBook<100> order_book;
     VectorizedInferenceEngine inference;
-    AvellanedaStoikovStrategy strategy;
+    DynamicMMStrategy strategy(0.01, 0.15, 300.0, 10.0, 0.01, 850);
     hardware::CustomPacketFilter packet_filter;
     
     std::cout << "Trading components initialized\n";
@@ -145,36 +145,37 @@ void example_full_trading_system() {
         double ofi = order_book.calculate_ofi(10);
         
         // Calculate spread
-        double spread = order_book.get_best_ask() - order_book.get_best_bid();
+        const double best_bid = order_book.get_best_bid();
+        const double best_ask = order_book.get_best_ask();
+        const double spread = (best_bid > 0.0 && best_ask > 0.0 && best_ask > best_bid)
+                                ? (best_ask - best_bid)
+                                : 0.0;
         
-        // Build feature vector (15 features)
-        std::array<float, 15> features;
-        features[0] = static_cast<float>(ofi);
-        features[1] = static_cast<float>(spread);
-        // ... more features ...
+        // Build feature vector (VectorizedInferenceEngine::INPUT_SIZE = 10)
+        std::array<double, VectorizedInferenceEngine::INPUT_SIZE> features{};
+        features[0] = ofi;
+        features[1] = spread;
         
-        // Neural network inference (270 ns) - AVX-512 vectorized
+        // Neural network inference (SIMD)
         auto alpha = inference.predict(features.data());
+        const int action = alpha.get_action();
         
-        // Generate trading decision (70 ns) - Avellaneda-Stoikov
-        auto decision = strategy.compute(order_book, alpha[0], alpha[1]);
+        // Avellaneda-Stoikov quote calculation (demo parameters)
+        const double mid = (best_bid > 0.0 && best_ask > 0.0) ? ((best_bid + best_ask) / 2.0) : price;
+        auto quotes = strategy.calculate_quotes(mid, /*inventory=*/0, /*time_remaining=*/300.0, /*latency_cost=*/0.0001);
         
-        // Risk checks (20 ns) - Branch-optimized
-        if (decision.should_trade && 
-            decision.order_size > 0 && 
-            decision.order_size < 1000) [[likely]] {
-            
-            // Submit order (60 ns) - Pre-built template + NIC TX
+        // Risk checks (demo)
+        const uint32_t order_size = (action == 1)
+            ? static_cast<uint32_t>(quotes.bid_size)
+            : static_cast<uint32_t>(quotes.ask_size);
+        const double order_price = (action == 1) ? quotes.bid_price : quotes.ask_price;
+        
+        if (action != 0 && order_size > 0 && order_size < 1000) [[likely]] {
             uint8_t order_packet[64];
             size_t order_len;
             
-            packet_filter.build_order_packet(
-                order_packet, &order_len,
-                decision.order_price, decision.order_size
-            );
-            
+            packet_filter.build_order_packet(order_packet, &order_len, order_price, order_size);
             nic.submit_tx(order_packet, order_len);
-            
             orders_submitted.fetch_add(1, std::memory_order_relaxed);
         }
         
@@ -289,7 +290,7 @@ void example_with_monitoring() {
     std::cout << "Monitor thread running on core 0 (shows stats)\n\n";
     
     // Pin monitor thread to different core
-    system::CPUIsolation::pin_to_core(0);
+    system_determinism::CPUIsolation::pin_to_core(0);
     
     // THE BUSY-WAIT LOOP (on isolated core 2)
     nic.busy_wait_loop([](uint8_t* packet, size_t len) {
