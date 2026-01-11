@@ -25,6 +25,7 @@
 #endif
 
 namespace hft {
+namespace simd_features {
 
 // aligned feature array for simd ops
 struct alignas(64) Features {

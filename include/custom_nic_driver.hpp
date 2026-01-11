@@ -307,8 +307,6 @@ public:
                     callback(packet_data, packet_len);
                 }
             }
-            
-        }
         }  // ← Loop back to top immediately!
         
         // NEVER REACHED (infinite loop)
@@ -397,21 +395,21 @@ public:
 
 private:
     // Memory-mapped hardware registers (BAR0)
-    volatile uint8_t* bar0_base_;
+    volatile uint8_t* bar0_base_ = nullptr;
     
     // Descriptor rings (shared with hardware via DMA)
-    RXDescriptor* rx_ring_;
-    TXDescriptor* tx_ring_;
+    RXDescriptor* rx_ring_ = nullptr;
+    TXDescriptor* tx_ring_ = nullptr;
     
     // Packet buffers (DMA-able memory)
-    uint8_t* rx_buffers_[RX_RING_SIZE];
-    uint8_t* tx_buffers_[TX_RING_SIZE];
+    uint8_t* rx_buffers_[RX_RING_SIZE] = {nullptr};
+    uint8_t* tx_buffers_[TX_RING_SIZE] = {nullptr};
     
     // Software head/tail pointers
-    uint32_t rx_head_;
-    uint32_t tx_tail_;
+    uint32_t rx_head_ = 0;
+    uint32_t tx_tail_ = 0;
     
-    bool initialized_;
+    bool initialized_ = false;
     
     /**
      * Read 32-bit hardware register
@@ -432,8 +430,16 @@ private:
     inline void write_reg32(uint64_t offset, uint32_t value) {
         *reinterpret_cast<volatile uint32_t*>(bar0_base_ + offset) = value;
         
-        // Memory fence (ensure write completes before continuing)
+        // Memory fence (ensure the MMIO write is ordered before continuing).
+        // Use an arch-appropriate full barrier so this header compiles on both
+        // x86_64 and Apple Silicon/aarch64.
+#if defined(__x86_64__) || defined(_M_X64)
         __asm__ __volatile__("mfence" ::: "memory");
+#elif defined(__aarch64__) || defined(_M_ARM64)
+        __asm__ __volatile__("dmb ish" ::: "memory");
+#else
+        __sync_synchronize();
+#endif
     }
     
     /**

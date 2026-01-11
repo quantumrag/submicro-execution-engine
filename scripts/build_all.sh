@@ -15,7 +15,7 @@ NC='\033[0m' # No Color
 # Compiler settings
 CXX="${CXX:-g++}"
 CXXFLAGS="-std=c++17 -O3 -march=native -DNDEBUG -ffast-math -flto"
-INCLUDES="-I./include"
+INCLUDES="-I./include -I."
 LIBS="-lpthread -lssl -lcrypto"
 
 # macOS specific paths for Boost and OpenSSL

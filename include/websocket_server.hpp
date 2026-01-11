@@ -5,17 +5,97 @@
 #include <boost/beast/core.hpp>
 #include <boost/beast/websocket.hpp>
 #include <boost/asio/ip/tcp.hpp>
-#include <nlohmann/json.hpp>
-#include <thread>
+
 #include <atomic>
-#include <set>
+#include <chrono>
+#include <cctype>
 #include <iostream>
+#include <memory>
+#include <mutex>
+#include <set>
+#include <sstream>
+#include <string>
+#include <thread>
 
 namespace beast = boost::beast;
 namespace websocket = beast::websocket;
 namespace net = boost::asio;
 using tcp = net::ip::tcp;
-using json = nlohmann::json;
+
+namespace hft_json {
+
+inline std::string escape(const std::string& s) {
+    std::string out;
+    out.reserve(s.size() + 8);
+
+    for (char c : s) {
+        switch (c) {
+            case '"': out += "\\\""; break;
+            case '\\': out += "\\\\"; break;
+            case '\b': out += "\\b"; break;
+            case '\f': out += "\\f"; break;
+            case '\n': out += "\\n"; break;
+            case '\r': out += "\\r"; break;
+            case '\t': out += "\\t"; break;
+            default:
+                if (static_cast<unsigned char>(c) < 0x20) {
+                    // Control chars -> drop (or could be \u00XX). Keep it simple.
+                    out += ' ';
+                } else {
+                    out += c;
+                }
+        }
+    }
+
+    return out;
+}
+
+inline std::string quote(const std::string& s) {
+    return std::string("\"") + escape(s) + "\"";
+}
+
+inline void append_comma_if_needed(std::ostringstream& oss, bool& first) {
+    if (!first) {
+        oss << ',';
+    }
+    first = false;
+}
+
+template <typename T>
+inline void append_kv_number(std::ostringstream& oss, bool& first, const char* key, T value) {
+    append_comma_if_needed(oss, first);
+    oss << quote(key) << ':' << value;
+}
+
+inline void append_kv_string(std::ostringstream& oss, bool& first, const char* key, const std::string& value) {
+    append_comma_if_needed(oss, first);
+    oss << quote(key) << ':' << quote(value);
+}
+
+inline std::string extract_string_field(const std::string& msg, const char* field_name) {
+    // Extremely small JSON helper for messages like: {"command":"get_history"}
+    // Not a general JSON parser.
+    const std::string needle = std::string("\"") + field_name + "\"";
+    std::size_t pos = msg.find(needle);
+    if (pos == std::string::npos) return {};
+
+    pos = msg.find(':', pos + needle.size());
+    if (pos == std::string::npos) return {};
+
+    // Skip whitespace
+    ++pos;
+    while (pos < msg.size() && std::isspace(static_cast<unsigned char>(msg[pos]))) ++pos;
+
+    if (pos >= msg.size() || msg[pos] != '"') return {};
+    ++pos;
+
+    std::size_t end = msg.find('"', pos);
+    if (end == std::string::npos || end <= pos) return {};
+
+    return msg.substr(pos, end - pos);
+}
+
+} // namespace hft_json
 
 // WebSocket session for each connected client
 class WebSocketSession : public std::enable_shared_from_this<WebSocketSession> {
@@ -59,54 +139,60 @@ private:
         buffer_.consume(buffer_.size());
         
         // Handle client requests (e.g., "get_history", "get_summary")
-        try {
-            auto j = json::parse(msg);
-            std::string cmd = j.value("command", "");
-            
-            if (cmd == "get_history") {
-                send_history();
-            } else if (cmd == "get_summary") {
-                send_summary();
-            }
-        } catch (...) {
-            // Ignore malformed messages
+        // Avoid external JSON dependencies: accept very small JSON messages.
+        const std::string cmd = hft_json::extract_string_field(msg, "command");
+        if (cmd == "get_history") {
+            send_history();
+        } else if (cmd == "get_summary") {
+            send_summary();
         }
     }
     
     void send_history() {
         auto snapshots = collector_.get_recent_snapshots(1000);
-        json j = json::array();
-        
+
+        std::ostringstream oss;
+        oss << '[';
+        bool first_item = true;
+
         for (const auto& snap : snapshots) {
-            j.push_back({
-                {"timestamp", snap.timestamp_ns},
-                {"mid_price", snap.mid_price},
-                {"spread", snap.spread_bps},
-                {"pnl", snap.pnl},
-                {"position", snap.position},
-                {"buy_intensity", snap.buy_intensity},
-                {"sell_intensity", snap.sell_intensity},
-                {"latency", snap.cycle_latency_us}
-            });
+            if (!first_item) oss << ',';
+            first_item = false;
+
+            oss << '{';
+            bool first_kv = true;
+            hft_json::append_kv_number(oss, first_kv, "timestamp", snap.timestamp_ns);
+            hft_json::append_kv_number(oss, first_kv, "mid_price", snap.mid_price);
+            hft_json::append_kv_number(oss, first_kv, "spread", snap.spread_bps);
+            hft_json::append_kv_number(oss, first_kv, "pnl", snap.pnl);
+            hft_json::append_kv_number(oss, first_kv, "position", snap.position);
+            hft_json::append_kv_number(oss, first_kv, "buy_intensity", snap.buy_intensity);
+            hft_json::append_kv_number(oss, first_kv, "sell_intensity", snap.sell_intensity);
+            hft_json::append_kv_number(oss, first_kv, "latency", snap.cycle_latency_us);
+            oss << '}';
         }
-        
-        send_metrics(j.dump());
+
+        oss << ']';
+        send_metrics(oss.str());
     }
     
     void send_summary() {
         auto stats = collector_.get_summary();
-        json j = {
-            {"type", "summary"},
-            {"avg_pnl", stats.avg_pnl},
-            {"max_pnl", stats.max_pnl},
-            {"min_pnl", stats.min_pnl},
-            {"avg_latency", stats.avg_latency_us},
-            {"max_latency", stats.max_latency_us},
-            {"total_trades", stats.total_trades},
-            {"fill_rate", stats.fill_rate}
-        };
-        
-        send_metrics(j.dump());
+
+        std::ostringstream oss;
+        oss << '{';
+        bool first_kv = true;
+        hft_json::append_kv_string(oss, first_kv, "type", "summary");
+        hft_json::append_kv_number(oss, first_kv, "avg_pnl", stats.avg_pnl);
+        hft_json::append_kv_number(oss, first_kv, "max_pnl", stats.max_pnl);
+        hft_json::append_kv_number(oss, first_kv, "min_pnl", stats.min_pnl);
+        hft_json::append_kv_number(oss, first_kv, "avg_latency", stats.avg_latency_us);
+        hft_json::append_kv_number(oss, first_kv, "max_latency", stats.max_latency_us);
+        hft_json::append_kv_number(oss, first_kv, "total_trades", stats.total_trades);
+        hft_json::append_kv_number(oss, first_kv, "fill_rate", stats.fill_rate);
+        oss << '}';
+
+        send_metrics(oss.str());
     }
     
     websocket::stream<tcp::socket> ws_;
@@ -177,24 +263,26 @@ private:
             
             // Get current metrics
             auto& metrics = collector_.get_metrics();
-            
-            json j = {
-                {"type", "update"},
-                {"timestamp", std::chrono::steady_clock::now().time_since_epoch().count()},
-                {"mid_price", metrics.mid_price.load()},
-                {"spread", metrics.spread_bps.load()},
-                {"pnl", metrics.total_pnl.load()},
-                {"position", metrics.current_position.load()},
-                {"buy_intensity", metrics.buy_intensity.load()},
-                {"sell_intensity", metrics.sell_intensity.load()},
-                {"latency", metrics.avg_cycle_latency_us.load()},
-                {"orders_sent", metrics.orders_sent.load()},
-                {"orders_filled", metrics.orders_filled.load()},
-                {"regime", metrics.current_regime.load()},
-                {"position_usage", metrics.position_limit_usage.load()}
-            };
-            
-            std::string msg = j.dump();
+
+            std::ostringstream oss;
+            oss << '{';
+            bool first_kv = true;
+            hft_json::append_kv_string(oss, first_kv, "type", "update");
+            hft_json::append_kv_number(oss, first_kv, "timestamp", std::chrono::steady_clock::now().time_since_epoch().count());
+            hft_json::append_kv_number(oss, first_kv, "mid_price", metrics.mid_price.load());
+            hft_json::append_kv_number(oss, first_kv, "spread", metrics.spread_bps.load());
+            hft_json::append_kv_number(oss, first_kv, "pnl", metrics.total_pnl.load());
+            hft_json::append_kv_number(oss, first_kv, "position", metrics.current_position.load());
+            hft_json::append_kv_number(oss, first_kv, "buy_intensity", metrics.buy_intensity.load());
+            hft_json::append_kv_number(oss, first_kv, "sell_intensity", metrics.sell_intensity.load());
+            hft_json::append_kv_number(oss, first_kv, "latency", metrics.avg_cycle_latency_us.load());
+            hft_json::append_kv_number(oss, first_kv, "orders_sent", metrics.orders_sent.load());
+            hft_json::append_kv_number(oss, first_kv, "orders_filled", metrics.orders_filled.load());
+            hft_json::append_kv_number(oss, first_kv, "regime", metrics.current_regime.load());
+            hft_json::append_kv_number(oss, first_kv, "position_usage", metrics.position_limit_usage.load());
+            oss << '}';
+
+            std::string msg = oss.str();
             
             // Send to all connected clients
             std::lock_guard<std::mutex> lock(sessions_mutex_);

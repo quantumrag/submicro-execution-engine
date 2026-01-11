@@ -4,6 +4,7 @@
 #include <array>
 #include <atomic>
 #include <algorithm>
+#include <inttypes.h>
 
 namespace hft {
 
@@ -63,23 +64,23 @@ public:
     
     void print_report() const {
         printf("\n=== Jitter Analysis (Inter-Cycle Gaps) ===\n");
-        printf("Total Samples: %lu\n", total_samples_);
-        printf("Stalled Samples (>1000 cycles): %lu\n", stalled_samples_);
-        printf("Max Jitter: %lu cycles (~%.2f ns)\n", max_jitter_cycles_, max_jitter_cycles_ / 3.0); // approx 3GHz
-        
+        printf("Total Samples: %" PRIu64 "\n", total_samples_);
+        printf("Stalled Samples (>1000 cycles): %" PRIu64 "\n", stalled_samples_);
+        printf("Max Jitter: %" PRIu64 " cycles (~%.2f ns)\n",
+               max_jitter_cycles_, max_jitter_cycles_ / 3.0);  // approx 3GHz
+
         printf("Histogram:\n");
-        for(size_t i=0; i<HISTOGRAM_BUCKETS; ++i) {
+        for (size_t i = 0; i < HISTOGRAM_BUCKETS; ++i) {
             if (histogram_[i] > 0) {
-                printf("[%lu-%lu cycles]: %lu\n", 
-                       i * BUCKET_WIDTH_CYCLES, 
-                       (i+1) * BUCKET_WIDTH_CYCLES, 
-                       histogram_[i]);
+                const uint64_t lo = static_cast<uint64_t>(i) * BUCKET_WIDTH_CYCLES;
+                const uint64_t hi = static_cast<uint64_t>(i + 1) * BUCKET_WIDTH_CYCLES;
+                printf("[%" PRIu64 "-%" PRIu64 " cycles]: %" PRIu64 "\n", lo, hi, histogram_[i]);
             }
         }
         if (stalled_samples_ > 0) {
             printf("[CRITICAL] System interrupts detected! Check CPU isolation.\n");
         } else {
-             printf("[PASS] Clean execution profile.\n");
+            printf("[PASS] Clean execution profile.\n");
         }
     }
     
